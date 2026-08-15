@@ -723,6 +723,9 @@ pets:AddSwitch("Auto Buy AURA", function(bool)
     end
 end)
 
+-- ----------------------------
+-- 🎁 TAB: GIFT (robust)
+-- ----------------------------
 local Gift = window:AddTab("Gift")
 Gift:AddLabel("Gifting Protein egg:").TextSize = 22
 

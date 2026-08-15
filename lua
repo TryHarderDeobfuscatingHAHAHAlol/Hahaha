@@ -723,112 +723,119 @@ pets:AddSwitch("Auto Buy AURA", function(bool)
     end
 end)
 
-pets:AddLabel(" Auto Equip Pets")
+local Gift = window:AddTab("Gift")
+Gift:AddLabel("Gifting Protein egg:").TextSize = 22
 
-Equip 5 Neon Guardians
-pets:AddButton("Equip 5 Neon Guardian", function()
-    print("[⚙️] Equipping 5 Neon Guardians...")
+local proteinEggLabel = Gift:AddLabel("Protein Eggs: 0")
+proteinEggLabel.TextSize = 20
 
-    local LocalPlayer = game:GetService("Players").LocalPlayer
-    local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local selectedEggPlayer = nil
+local eggCount = 0
 
-    -- Reference to the remote event
-    local equipPetEvent = ReplicatedStorage:WaitForChild("rEvents"):FindFirstChild("equipPetEvent")
-    if not equipPetEvent then
-        warn("❌ 'equipPetEvent' was not found.")
-        return
-    end
-
-    -- Pet folder
-    local petsFolder = LocalPlayer:FindFirstChild("petsFolder")
-    if not petsFolder then
-        warn("❌ 'petsFolder' was not found.")
-        return
-    end
-
-    -- Quickly unequip all pets
-    for _, folder in pairs(petsFolder:GetChildren()) do
-        if folder:IsA("Folder") then
-            for _, pet in pairs(folder:GetChildren()) do
-                equipPetEvent:FireServer("unequipPet", pet)
-            end
+local eggDropdown = Gift:AddDropdown("Player to Gift Eggs", function(selectedDisplayName)
+    for _, plr in ipairs(Players:GetPlayers()) do
+        if plr.DisplayName == selectedDisplayName then
+            selectedEggPlayer = plr
+            break
         end
     end
-
-    task.wait(0.1) -- small delay to ensure the unequipped item is processed
-
-    Equip 5 Neon Guardians
-    local equipped = 0
-    local maxEquip = 5
-    for _, folder in pairs(petsFolder:GetChildren()) do
-        if folder:IsA("Folder") then
-            for _, pet in pairs(folder:GetChildren()) do
-                if pet.Name == "Neon Guardian" then
-                    equipPetEvent:FireServer("equipPet", pet)
-                    equipped += 1
-                    print("[✅] Equipado Neon Guardian #" .. equipped)
-                    if equipped >= maxEquip then
-                        print("[🏁] Se equiparon 5 Neon Guardian(s).")
-                        return
-                    end
-                end
-            end
-        end
-    end
-
-    print("[🏁] Se equiparon " .. equipped .. " Neon Guardian(s).")
 end)
 
-Equip 5 Darkstar Hunters
-pets:AddButton("Equip 5 Darkstar Hunter", function()
-    print("[⚙️] Equipping 5 Darkstar Hunter...")
-
-    local LocalPlayer = game:GetService("Players").LocalPlayer
-    local ReplicatedStorage = game:GetService("ReplicatedStorage")
-
-    -- Reference to the remote event
-    local equipPetEvent = ReplicatedStorage:WaitForChild("rEvents"):FindFirstChild("equipPetEvent")
-    if not equipPetEvent then
-        warn("❌ 'equipPetEvent' was not found.")
-        return
+for _, plr in ipairs(Players:GetPlayers()) do
+    if plr ~= Players.LocalPlayer then
+        eggDropdown:Add(plr.DisplayName)
     end
+end
 
-    -- Pet folder
-    local petsFolder = LocalPlayer:FindFirstChild("petsFolder")
-    if not petsFolder then
-        warn("❌ 'petsFolder' was not found.")
-        return
+Players.PlayerAdded:Connect(function(plr)
+    if plr ~= Players.LocalPlayer then
+        eggDropdown:Add(plr.DisplayName)
     end
+end)
 
-    -- Quickly unequip all pets
-    for _, folder in pairs(petsFolder:GetChildren()) do
-        if folder:IsA("Folder") then
-            for _, pet in pairs(folder:GetChildren()) do
-                equipPetEvent:FireServer("unequipPet", pet)
+Gift:AddTextBox("Amount of Eggs", function(text)
+    eggCount = tonumber(text) or 0
+end)
+
+Gift:AddButton("Gift Eggs", function()
+    if selectedEggPlayer and eggCount > 0 then
+        for i = 1, eggCount do
+            local egg = Players.LocalPlayer.consumablesFolder:FindFirstChild("Protein Egg")
+            if egg then
+                ReplicatedStorage.rEvents.giftRemote:InvokeServer("giftRequest", selectedEggPlayer, egg)
+                task.wait(0.1)
+            end
+        end
+    end
+end)
+
+Gift:AddLabel("Gifting Tropical Shakes:").TextSize = 22
+
+local tropicalShakeLabel = Gift:AddLabel("Tropical Shakes: 0")
+tropicalShakeLabel.TextSize = 18
+
+local selectedShakePlayer = nil
+local shakeCount = 0
+
+local shakeDropdown = Gift:AddDropdown("Player to Gift Tropical Shakes", function(selectedDisplayName)
+    for _, plr in ipairs(Players:GetPlayers()) do
+        if plr.DisplayName == selectedDisplayName then
+            selectedShakePlayer = plr
+            break
+        end
+    end
+end)
+
+for _, plr in ipairs(Players:GetPlayers()) do
+    if plr ~= Players.LocalPlayer then
+        shakeDropdown:Add(plr.DisplayName)
+    end
+end
+
+Players.PlayerAdded:Connect(function(plr)
+    if plr ~= Players.LocalPlayer then
+        shakeDropdown:Add(plr.DisplayName)
+    end
+end)
+
+Gift:AddTextBox("Tropical Shakes gift", function(text)
+    shakeCount = tonumber(text) or 0
+end)
+
+Gift:AddButton("Gift Tropical Shakes", function()
+    if selectedShakePlayer and shakeCount > 0 then
+        for i = 1, shakeCount do
+            local shake = Players.LocalPlayer.consumablesFolder:FindFirstChild("Tropical Shake")
+            if shake then
+                ReplicatedStorage.rEvents.giftRemote:InvokeServer("giftRequest", selectedShakePlayer, shake)
+                task.wait(0.1)
+            end
+        end
+    end
+end)
+
+local function updateItemCount()
+    local proteinEggCount = 0
+    local tropicalShakeCount = 0
+
+    local backpack = Players.LocalPlayer:WaitForChild("Backpack")
+    if backpack then
+        for _, item in ipairs(backpack:GetChildren()) do
+            if item.Name == "Protein Egg" then
+                proteinEggCount = proteinEggCount + 1
+            elseif item.Name == "Tropical Shake" or item.Name == "Piñas" then
+                tropicalShakeCount = tropicalShakeCount + 1
             end
         end
     end
 
-    task.wait(0.1) -- small delay to ensure the unequipped item is processed
+    proteinEggLabel.Text = "Protein Eggs: " .. proteinEggCount
+    tropicalShakeLabel.Text = "Tropical Shakes: " .. tropicalShakeCount
+end
 
-    Equip 5 Darkstar Hunters
-    local equipped = 0
-    local maxEquip = 5
-    for _, folder in pairs(petsFolder:GetChildren()) do
-        if folder:IsA("Folder") then
-            for _, pet in pairs(folder:GetChildren()) do
-                if pet.Name == "Darkstar Hunter" then
-                    equipPetEvent:FireServer("equipPet", pet)
-                    equipped += 1
-                    print("[✅] Equipado Darkstar Hunter #" .. equipped)
-                    if equipped >= maxEquip then
-                        print("[🏁] 5 Darkstar Hunter(s) were equipped.")
-                        return
-                    end
-                end
-            end
-        end
+task.spawn(function()
+    while true do
+        updateItemCount()
+        task.wait(0.25)
     end
-
-    print("[🏁] Se equiparon " .. equipped .. " Darkstar Hunter(s).")
 end)

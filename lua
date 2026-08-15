@@ -427,3 +427,165 @@ teleport:AddButton("Brawl Regular", function()
         Duration = 0
     })
 end)
+
+local evolveRemote = game:GetService("ReplicatedStorage"):WaitForChild("rEvents"):WaitForChild("petEvolveEvent")
+
+local function evolvePets()
+	for _, petName in ipairs(Pets) do
+		local args = {"evolvePet", petName}
+		evolveRemote:FireServer(unpack(args))
+		warn("Intentando evolucionar:", petName)
+	end
+end
+
+pets:AddSwitch("Auto Evolve Pets", function(state)
+	_G.AutoEvolvePets = state
+	if state then
+		print("Auto evolve ON")
+		task.spawn(function()
+			while _G.AutoEvolvePets do
+				evolvePets()
+				task.wait(0.1)
+			end
+		end)
+	else
+		print("Auto evolve OFF")
+	end
+end)
+local TradeTab = window:AddTab("Auto Trade")
+
+local Players = game:GetService("Players")
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local player = Players.LocalPlayer
+
+local petList = {
+	["Blue Birdie"] = "Basic",
+	["Orange Hedgehog"] = "Basic",
+	["Red Kitty"] = "Basic",
+	["Blue Bunny"] = "Basic",
+	["Silver Dog"] = "Basic",
+	["Dark Vampy"] = "Advanced",
+	["Dark Golem"] = "Advanced",
+	["Green Butterfly"] = "Advanced",
+	["Yellow Butterfly"] = "Advanced",
+	["Crimson Falcon"] = "Rare",
+	["Purple Dragon"] = "Rare",
+	["Orange Pegasus"] = "Rare",
+	["Purple Falcon"] = "Rare",
+	["Red Dragon"] = "Rare",
+	["White Pegasus"] = "Rare",
+	["Frostwave Legends Penguin"] = "Rare",
+	["Phantom Genesis Dragon"] = "Rare",
+	["Eternal Strike Leviathan"] = "Rare",
+	["Blue Pheonix"] = "Epic",
+	["Blue Firecaster"] = "Epic",
+	["Golden Pheonix"] = "Epic",
+	["Red Firecaster"] = "Epic",
+	["Green Firecaster"] = "Epic",
+	["White Pheonix"] = "Epic",
+	["Dark Legends Manticore"] = "Epic",
+	["Ultimate Supernova Pegasus"] = "Epic",
+	["Lightning Strike Phantom"] = "Epic",
+	["Golden Viking"] = "Epic",
+	["Infernal Dragon"] = "Unique",
+	["Ultra Birdie"] = "Unique",
+	["Magic Butterfly"] = "Unique",
+	["Aether Spirit Bunny"] = "Unique",
+	["Cybernetic Showdown Dragon"] = "Unique",
+	["Darkstar Hunter"] = "Unique",
+	["Muscle Sensei"] = "Unique",
+	["Neon Guardian"] = "Unique"
+}
+
+local selectedPlayer = nil
+local selectedPet = nil
+local selectedRarity = nil
+local autoTrading = false
+local tradeAll = false
+
+local playerDropdown = TradeTab:AddDropdown("Choose Player", function(value)
+	selectedPlayer = value
+end)
+
+for _, plr in pairs(Players:GetPlayers()) do
+	if plr ~= player then
+		playerDropdown:Add(plr.Name)
+	end
+end
+
+Players.PlayerAdded:Connect(function(plr)
+	playerDropdown:Add(plr.Name)
+end)
+Players.PlayerRemoving:Connect(function(plr)
+	playerDropdown:Remove(plr.Name)
+end)
+
+local petDropdown = TradeTab:AddDropdown("Choose Pet", function(value)
+	selectedPet = value
+	selectedRarity = petList[value]
+end)
+
+for name, _ in pairs(petList) do
+	petDropdown:Add(name)
+end
+
+local function getSixPets(petName, rarity)
+	local folder = player:WaitForChild("petsFolder"):FindFirstChild(rarity)
+	if not folder then return {} end
+	local found = {}
+	for _, pet in ipairs(folder:GetChildren()) do
+		if pet.Name == petName then
+			table.insert(found, pet)
+			if #found >= 9 then break end
+		end
+	end
+	return found
+end
+
+local function doTrade(target)
+	if not target or not selectedPet or not selectedRarity then return end
+	local args1 = {"sendTradeRequest", target}
+	ReplicatedStorage.rEvents.tradingEvent:FireServer(unpack(args1))
+	task.wait(1)
+	local petsToOffer = getSixPets(selectedPet, selectedRarity)
+	for _, pet in ipairs(petsToOffer) do
+		local args2 = {"offerItem", pet}
+		ReplicatedStorage.rEvents.tradingEvent:FireServer(unpack(args2))
+		task.wait(0.1)
+	end
+	local args3 = {"acceptTrade"}
+	ReplicatedStorage.rEvents.tradingEvent:FireServer(unpack(args3))
+end
+
+TradeTab:AddSwitch("Start Auto Trade", function(state)
+	autoTrading = state
+	if state and selectedPlayer and selectedPet then
+		task.spawn(function()
+			doTrade(Players:FindFirstChild(selectedPlayer))
+		end)
+	end
+end)
+
+TradeTab:AddSwitch("Trade All Players", function(state)
+	tradeAll = state
+	if state and selectedPet then
+		task.spawn(function()
+			while tradeAll do
+				for _, plr in pairs(Players:GetPlayers()) do
+					if plr ~= player then
+						doTrade(plr)
+						task.wait(0.1)
+					end
+				end
+				task.wait(0.1)
+			end
+		end)
+	end
+end)
+
+Players.PlayerAdded:Connect(function(plr)
+	if tradeAll and selectedPet then
+		task.wait(0.1)
+		doTrade(plr)
+	end
+end)

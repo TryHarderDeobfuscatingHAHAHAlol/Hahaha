@@ -722,3 +722,113 @@ pets:AddSwitch("Auto Buy AURA", function(bool)
         print("Auto buy aura stopped")
     end
 end)
+
+pets:AddLabel(" Auto Equip Pets")
+
+Equip 5 Neon Guardians
+pets:AddButton("Equip 5 Neon Guardian", function()
+    print("[⚙️] Equipping 5 Neon Guardians...")
+
+    local LocalPlayer = game:GetService("Players").LocalPlayer
+    local ReplicatedStorage = game:GetService("ReplicatedStorage")
+
+    -- Reference to the remote event
+    local equipPetEvent = ReplicatedStorage:WaitForChild("rEvents"):FindFirstChild("equipPetEvent")
+    if not equipPetEvent then
+        warn("❌ 'equipPetEvent' was not found.")
+        return
+    end
+
+    -- Pet folder
+    local petsFolder = LocalPlayer:FindFirstChild("petsFolder")
+    if not petsFolder then
+        warn("❌ 'petsFolder' was not found.")
+        return
+    end
+
+    -- Quickly unequip all pets
+    for _, folder in pairs(petsFolder:GetChildren()) do
+        if folder:IsA("Folder") then
+            for _, pet in pairs(folder:GetChildren()) do
+                equipPetEvent:FireServer("unequipPet", pet)
+            end
+        end
+    end
+
+    task.wait(0.1) -- small delay to ensure the unequipped item is processed
+
+    Equip 5 Neon Guardians
+    local equipped = 0
+    local maxEquip = 5
+    for _, folder in pairs(petsFolder:GetChildren()) do
+        if folder:IsA("Folder") then
+            for _, pet in pairs(folder:GetChildren()) do
+                if pet.Name == "Neon Guardian" then
+                    equipPetEvent:FireServer("equipPet", pet)
+                    equipped += 1
+                    print("[✅] Equipado Neon Guardian #" .. equipped)
+                    if equipped >= maxEquip then
+                        print("[🏁] Se equiparon 5 Neon Guardian(s).")
+                        return
+                    end
+                end
+            end
+        end
+    end
+
+    print("[🏁] Se equiparon " .. equipped .. " Neon Guardian(s).")
+end)
+
+Equip 5 Darkstar Hunters
+pets:AddButton("Equip 5 Darkstar Hunter", function()
+    print("[⚙️] Equipping 5 Darkstar Hunter...")
+
+    local LocalPlayer = game:GetService("Players").LocalPlayer
+    local ReplicatedStorage = game:GetService("ReplicatedStorage")
+
+    -- Reference to the remote event
+    local equipPetEvent = ReplicatedStorage:WaitForChild("rEvents"):FindFirstChild("equipPetEvent")
+    if not equipPetEvent then
+        warn("❌ 'equipPetEvent' was not found.")
+        return
+    end
+
+    -- Pet folder
+    local petsFolder = LocalPlayer:FindFirstChild("petsFolder")
+    if not petsFolder then
+        warn("❌ 'petsFolder' was not found.")
+        return
+    end
+
+    -- Quickly unequip all pets
+    for _, folder in pairs(petsFolder:GetChildren()) do
+        if folder:IsA("Folder") then
+            for _, pet in pairs(folder:GetChildren()) do
+                equipPetEvent:FireServer("unequipPet", pet)
+            end
+        end
+    end
+
+    task.wait(0.1) -- small delay to ensure the unequipped item is processed
+
+    Equip 5 Darkstar Hunters
+    local equipped = 0
+    local maxEquip = 5
+    for _, folder in pairs(petsFolder:GetChildren()) do
+        if folder:IsA("Folder") then
+            for _, pet in pairs(folder:GetChildren()) do
+                if pet.Name == "Darkstar Hunter" then
+                    equipPetEvent:FireServer("equipPet", pet)
+                    equipped += 1
+                    print("[✅] Equipado Darkstar Hunter #" .. equipped)
+                    if equipped >= maxEquip then
+                        print("[🏁] 5 Darkstar Hunter(s) were equipped.")
+                        return
+                    end
+                end
+            end
+        end
+    end
+
+    print("[🏁] Se equiparon " .. equipped .. " Darkstar Hunter(s).")
+end)

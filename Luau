@@ -428,165 +428,297 @@ teleport:AddButton("Brawl Regular", function()
     })
 end)
 
-local evolveRemote = game:GetService("ReplicatedStorage"):WaitForChild("rEvents"):WaitForChild("petEvolveEvent")
-
-local function evolvePets()
-	for _, petName in ipairs(Pets) do
-		local args = {"evolvePet", petName}
-		evolveRemote:FireServer(unpack(args))
-		warn("Intentando evolucionar:", petName)
-	end
-end
-
-pets:AddSwitch("Auto Evolve Pets", function(state)
-	_G.AutoEvolvePets = state
-	if state then
-		print("Auto evolve ON")
-		task.spawn(function()
-			while _G.AutoEvolvePets do
-				evolvePets()
-				task.wait(0.1)
-			end
-		end)
-	else
-		print("Auto evolve OFF")
-	end
-end)
-
-local TradeTab = window:AddTab("Auto Trade")
-
-local Players = game:GetService("Players")
+local pets = window:AddTab(       "Pets")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
-local player = Players.LocalPlayer
 
-local petList = {
-	["Blue Birdie"] = "Basic",
-	["Orange Hedgehog"] = "Basic",
-	["Red Kitty"] = "Basic",
-	["Blue Bunny"] = "Basic",
-	["Silver Dog"] = "Basic",
-	["Dark Vampy"] = "Advanced",
-	["Dark Golem"] = "Advanced",
-	["Green Butterfly"] = "Advanced",
-	["Yellow Butterfly"] = "Advanced",
-	["Crimson Falcon"] = "Rare",
-	["Purple Dragon"] = "Rare",
-	["Orange Pegasus"] = "Rare",
-	["Purple Falcon"] = "Rare",
-	["Red Dragon"] = "Rare",
-	["White Pegasus"] = "Rare",
-	["Frostwave Legends Penguin"] = "Rare",
-	["Phantom Genesis Dragon"] = "Rare",
-	["Eternal Strike Leviathan"] = "Rare",
-	["Blue Pheonix"] = "Epic",
-	["Blue Firecaster"] = "Epic",
-	["Golden Pheonix"] = "Epic",
-	["Red Firecaster"] = "Epic",
-	["Green Firecaster"] = "Epic",
-	["White Pheonix"] = "Epic",
-	["Dark Legends Manticore"] = "Epic",
-	["Ultimate Supernova Pegasus"] = "Epic",
-	["Lightning Strike Phantom"] = "Epic",
-	["Golden Viking"] = "Epic",
-	["Infernal Dragon"] = "Unique",
-	["Ultra Birdie"] = "Unique",
-	["Magic Butterfly"] = "Unique",
-	["Aether Spirit Bunny"] = "Unique",
-	["Cybernetic Showdown Dragon"] = "Unique",
-	["Darkstar Hunter"] = "Unique",
-	["Muscle Sensei"] = "Unique",
-	["Neon Guardian"] = "Unique"
+-- Crystal data structure with exact names from your original code
+local crystalData = {
+    ["Blue Crystal"] = {
+        {name = "Blue Birdie", rarity = "Basic"},
+        {name = "Orange Hedgehog", rarity = "Basic"},
+        {name = "Blue Aura", rarity = "Basic"},
+        {name = "Red Kitty", rarity = "Basic"},
+        {name = "Dark Vampy", rarity = "Advanced"},
+        {name = "Blue Bunny", rarity = "Basic"},
+        {name = "Red Aura", rarity = "Basic"},
+        {name = "Blue Aura", rarity = "Basic"},
+        {name = "Green Aura", rarity = "Basic"},
+        {name = "Purple Aura", rarity = "Basic"},
+        {name = "Red Aura", rarity = "Basic"},
+        {name = "Yellow Aura", rarity = "Basic"}
+    },
+    ["Green Crystal"] = {
+        {name = "Silver Dog", rarity = "Basic"},
+        {name = "Green Aura", rarity = "Advanced"},
+        {name = "Dark Golem", rarity = "Advanced"},
+        {name = "Green Butterfly", rarity = "Advanced"},
+        {name = "Crimson Falcon", rarity = "Rare"},
+        {name = "Red Aura", rarity = "Basic"},
+        {name = "Blue Aura", rarity = "Basic"},
+        {name = "Green Aura", rarity = "Basic"},
+        {name = "Purple Aura", rarity = "Basic"},
+        {name = "Red Aura", rarity = "Basic"},
+        {name = "Yellow Aura", rarity = "Basic"}
+    },
+    ["Frost Crystal"] = {
+        {name = "Yellow Butterfly", rarity = "Advanced"},
+        {name = "Purple Dragon", rarity = "Rare"},
+        {name = "Blue Pheonix", rarity = "Epic"},
+        {name = "Orange Pegasus", rarity = "Rare"},
+        {name = "Lightning", rarity = "Rare"},
+        {name = "Electro", rarity = "Advanced"}
+    },
+    ["Mythical Crystal"] = {
+        {name = "Purple Falcon", rarity = "Rare"},
+        {name = "Red Dragon", rarity = "Rare"},
+        {name = "Blue Firecaster", rarity = "Epic"},
+        {name = "Golden Pheonix", rarity = "Epic"},
+        {name = "Power Lightning", rarity = "Rare"},
+        {name = "Dark Lightning", rarity = "Epic"}
+    },
+    ["Inferno Crystal"] = {
+        {name = "Red Firecaster", rarity = "Epic"},
+        {name = "Infernal Dragon", rarity = "Unique"},
+        {name = "White Pegasus", rarity = "Rare"},
+        {name = "Golden Pheonix", rarity = "Epic"},
+        {name = "Inferno", rarity = "Epic"},
+        {name = "Dark Storm", rarity = "Unique"}
+    },
+    ["Legends Crystal"] = {
+        {name = "Ultra Birdie", rarity = "Unique"},
+        {name = "Magic Butterfly", rarity = "Unique"},
+        {name = "Green Firecaster", rarity = "Epic"},
+        {name = "White Pheonix", rarity = "Epic"},
+        {name = "Supernova", rarity = "Epic"},
+        {name = "Purple Nova", rarity = "Unique"}
+    },
+    ["Muscle Elite Crystal"] = {
+        {name = "Frostwave Legends Penguin", rarity = "Rare"},
+        {name = "Phantom Genesis Dragon", rarity = "Rare"},
+        {name = "Dark Legends Manticore", rarity = "Epic"},
+        {name = "Ultimate Supernova Pegasus", rarity = "Epic"},
+        {name = "Aether Spirit Bunny", rarity = "Unique"},
+        {name = "Cybernetic Showdown Dragon", rarity = "Unique"}
+    },
+    ["Galaxy Oracle Crystal"] = {
+        {name = "Eternal Strike Leviathan", rarity = "Rare"},
+        {name = "Lightning Strike Phantom", rarity = "Epic"},
+        {name = "Darkstar Hunter", rarity = "Unique"},
+        {name = "Muscle King", rarity = "Unique"},
+        {name = "Azure Tundra", rarity = "Epic"},
+        {name = "Ultra Inferno", rarity = "Rare"}
+    },
+    ["Jungle Crystal"] = {
+        {name = "Entropic Blast", rarity = "Unique"},
+        {name = "Muscle Sensei", rarity = "Unique"},
+        {name = "Grand Supernova", rarity = "Epic"},
+        {name = "Neon Guardian", rarity = "Unique"},
+        {name = "Eternal Megastrike", rarity = "Unique"},
+        {name = "Golden Viking", rarity = "Epic"},
+        {name = "Astral Electro", rarity = "Epic"},
+        {name = "Dark Electro", rarity = "Epic"},
+        {name = "Enchanted Mirage", rarity = "Epic"},
+        {name = "Ultra Mirage", rarity = "Unique"},
+        {name = "Unstable Mirage", rarity = "Unique"}
+    }
 }
 
-local selectedPlayer = nil
-local selectedPet = nil
-local selectedRarity = nil
-local autoTrading = false
-local tradeAll = false
-
-local playerDropdown = TradeTab:AddDropdown("Choose Player", function(value)
-	selectedPlayer = value
-end)
-
-for _, plr in pairs(Players:GetPlayers()) do
-	if plr ~= player then
-		playerDropdown:Add(plr.Name)
-	end
+-- Function to collect all unique pets and auras
+local function getAllPetsAndAuras()
+    local allPets = {}
+    local allAuras = {}
+    
+    for crystalName, pets in pairs(crystalData) do
+        for _, pet in ipairs(pets) do
+            if string.find(pet.name, "Aura") then
+                if not allAuras[pet.name] then
+                    allAuras[pet.name] = {name = pet.name, rarity = pet.rarity, crystal = crystalName}
+                end
+            else
+                if not allPets[pet.name] then
+                    allPets[pet.name] = {name = pet.name, rarity = pet.rarity, crystal = crystalName}
+                end
+            end
+        end
+    end
+    
+    return allPets, allAuras
 end
 
-Players.PlayerAdded:Connect(function(plr)
-	playerDropdown:Add(plr.Name)
-end)
-Players.PlayerRemoving:Connect(function(plr)
-	playerDropdown:Remove(plr.Name)
-end)
-
-local petDropdown = TradeTab:AddDropdown("Choose Pet", function(value)
-	selectedPet = value
-	selectedRarity = petList[value]
-end)
-
-for name, _ in pairs(petList) do
-	petDropdown:Add(name)
+-- Function to find which crystal contains a specific pet/aura
+local function findCrystalForItem(itemName)
+    for crystalName, pets in pairs(crystalData) do
+        for _, pet in ipairs(pets) do
+            if pet.name == itemName then
+                return crystalName
+            end
+        end
+    end
+    return nil
 end
 
-local function getSixPets(petName, rarity)
-	local folder = player:WaitForChild("petsFolder"):FindFirstChild(rarity)
-	if not folder then return {} end
-	local found = {}
-	for _, pet in ipairs(folder:GetChildren()) do
-		if pet.Name == petName then
-			table.insert(found, pet)
-			if #found >= 9 then break end
-		end
-	end
-	return found
-end
+-- Variables to track current selections
+local selectedPet = ""
+local selectedAura = ""
 
-local function doTrade(target)
-	if not target or not selectedPet or not selectedRarity then return end
-	local args1 = {"sendTradeRequest", target}
-	ReplicatedStorage.rEvents.tradingEvent:FireServer(unpack(args1))
-	task.wait(1)
-	local petsToOffer = getSixPets(selectedPet, selectedRarity)
-	for _, pet in ipairs(petsToOffer) do
-		local args2 = {"offerItem", pet}
-		ReplicatedStorage.rEvents.tradingEvent:FireServer(unpack(args2))
-		task.wait(0.1)
-	end
-	local args3 = {"acceptTrade"}
-	ReplicatedStorage.rEvents.tradingEvent:FireServer(unpack(args3))
-end
+-- Get all pets and auras
+local allPets, allAuras = getAllPetsAndAuras()
 
-TradeTab:AddSwitch("Start Auto Trade", function(state)
-	autoTrading = state
-	if state and selectedPlayer and selectedPet then
-		task.spawn(function()
-			doTrade(Players:FindFirstChild(selectedPlayer))
-		end)
-	end
+pets:AddLabel("PETS and AURAS")
+
+-- Pet dropdown
+local petDropdown = pets:AddDropdown("Select Pet", function(text)
+    selectedPet = text
+    local crystal = findCrystalForItem(text)
+    print("Pet selected: " .. text .. " (Found in: " .. (crystal or "Unknown") .. ")")
 end)
 
-TradeTab:AddSwitch("Trade All Players", function(state)
-	tradeAll = state
-	if state and selectedPet then
-		task.spawn(function()
-			while tradeAll do
-				for _, plr in pairs(Players:GetPlayers()) do
-					if plr ~= player then
-						doTrade(plr)
-						task.wait(0.1)
-					end
-				end
-				task.wait(0.1)
-			end
-		end)
-	end
+-- Add all pets manually (sorted by rarity)
+-- Basic Pets
+petDropdown:Add("Blue Birdie (Basic)")
+petDropdown:Add("Orange Hedgehog (Basic)")
+petDropdown:Add("Red Kitty (Basic)")
+petDropdown:Add("Blue Bunny (Basic)")
+petDropdown:Add("Silver Dog (Basic)")
+
+-- Advanced Pets
+petDropdown:Add("Dark Vampy (Advanced)")
+petDropdown:Add("Dark Golem (Advanced)")
+petDropdown:Add("Green Butterfly (Advanced)")
+petDropdown:Add("Yellow Butterfly (Advanced)")
+
+-- Rare Pets
+petDropdown:Add("Crimson Falcon (Rare)")
+petDropdown:Add("Purple Dragon (Rare)")
+petDropdown:Add("Orange Pegasus (Rare)")
+petDropdown:Add("Purple Falcon (Rare)")
+petDropdown:Add("Red Dragon (Rare)")
+petDropdown:Add("White Pegasus (Rare)")
+petDropdown:Add("Frostwave Legends Penguin (Rare)")
+petDropdown:Add("Phantom Genesis Dragon (Rare)")
+petDropdown:Add("Eternal Strike Leviathan (Rare)")
+
+-- Epic Pets
+petDropdown:Add("Blue Pheonix (Epic)")
+petDropdown:Add("Blue Firecaster (Epic)")
+petDropdown:Add("Golden Pheonix (Epic)")
+petDropdown:Add("Red Firecaster (Epic)")
+petDropdown:Add("Green Firecaster (Epic)")
+petDropdown:Add("White Pheonix (Epic)")
+petDropdown:Add("Dark Legends Manticore (Epic)")
+petDropdown:Add("Ultimate Supernova Pegasus (Epic)")
+petDropdown:Add("Lightning Strike Phantom (Epic)")
+petDropdown:Add("Golden Viking (Epic)")
+
+-- Unique Pets
+petDropdown:Add("Infernal Dragon (Unique)")
+petDropdown:Add("Ultra Birdie (Unique)")
+petDropdown:Add("Magic Butterfly (Unique)")
+petDropdown:Add("Aether Spirit Bunny (Unique)")
+petDropdown:Add("Cybernetic Showdown Dragon (Unique)")
+petDropdown:Add("Darkstar Hunter (Unique)")
+petDropdown:Add("Muscle Sensei (Unique)")
+petDropdown:Add("Neon Guardian (Unique)")
+
+-- Aura dropdown
+local auraDropdown = pets:AddDropdown("Select AURA", function(text)
+    selectedAura = text
+    local crystal = findCrystalForItem(text)
+    print("Aura selected: " .. text .. " (Found in: " .. (crystal or "Unknown") .. ")")
 end)
 
-Players.PlayerAdded:Connect(function(plr)
-	if tradeAll and selectedPet then
-		task.wait(0.1)
-		doTrade(plr)
-	end
+-- Add all auras manually (sorted by rarity)
+-- Basic Auras
+auraDropdown:Add("Blue Aura (Basic)")
+auraDropdown:Add("Green Aura (Basic)")
+auraDropdown:Add("Purple Aura (Basic)")
+auraDropdown:Add("Red Aura (Basic)")
+auraDropdown:Add("Yellow Aura (Basic)")
+auraDropdown:Add("Ultra Inferno  (Rare)")
+auraDropdown:Add("Azure Tundra (Epic)")
+auraDropdown:Add("Grand Supernova (Epic)")
+auraDropdown:Add("Muscle King (Unique)")
+auraDropdown:Add("Entropic Blast (Unique)")
+auraDropdown:Add("Eternal Megastrike (Unique)")
+
+pets:AddLabel("System to Buy")
+
+-- Auto buy pet toggle
+pets:AddSwitch("Auto Buy Pets", function(bool)
+    _G.AutoBuyPet = bool
+    
+    if bool then
+        if selectedPet == "" then
+            print("Please select a pet first!")
+            return
+        end
+        
+        -- Extract pet name from dropdown selection (remove rarity part)
+        local petName = selectedPet:match("^(.-)%s*%(")
+        if not petName then
+            petName = selectedPet
+        end
+        
+        local crystal = findCrystalForItem(petName)
+        if not crystal then
+            print("Could not find crystal for pet: " .. petName)
+            return
+        end
+        
+        print("Auto buy pet started for: " .. petName .. " from " .. crystal)
+        spawn(function()
+            while _G.AutoBuyPet and selectedPet ~= "" do
+                local petToBuy = ReplicatedStorage.cPetShopFolder:FindFirstChild(petName)
+                if petToBuy then
+                    ReplicatedStorage.cPetShopRemote:InvokeServer(petToBuy)
+                    print("Bought pet: " .. petName)
+                else
+                    print("Pet not found: " .. petName)
+                end
+                task.wait(0.1)
+            end
+        end)
+    else
+        print("Auto buy pet stopped")
+    end
+end)
+
+-- Auto buy aura toggle
+pets:AddSwitch("Auto Buy AURA", function(bool)
+    _G.AutoBuyAura = bool
+    
+    if bool then
+        if selectedAura == "" then
+            print("Please select an aura first!")
+            return
+        end
+        
+        -- Extract aura name from dropdown selection (remove rarity part)
+        local auraName = selectedAura:match("^(.-)%s*%(")
+        if not auraName then
+            auraName = selectedAura
+        end
+        
+        local crystal = findCrystalForItem(auraName)
+        if not crystal then
+            print("Could not find crystal for aura: " .. auraName)
+            return
+        end
+        
+        print("Auto buy aura started for: " .. auraName .. " from " .. crystal)
+        spawn(function()
+            while _G.AutoBuyAura and selectedAura ~= "" do
+                local auraToBuy = ReplicatedStorage.cPetShopFolder:FindFirstChild(auraName)
+                if auraToBuy then
+                    ReplicatedStorage.cPetShopRemote:InvokeServer(auraToBuy)
+                    print("Bought aura: " .. auraName)
+                else
+                    print("Aura not found: " .. auraName)
+                end
+                task.wait(0.1)
+            end
+        end)
+    else
+        print("Auto buy aura stopped")
+    end
 end)

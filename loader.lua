@@ -724,7 +724,7 @@ pets:AddSwitch("Auto Buy AURA", function(bool)
 end)
 
 -- 🎭 TAB DE EMOTES (o cualquier otro nombre de tab)
-local emoteTab = worldow:AddTab ("Tags")
+local emoteTab = window:AddTab ("Tags")
 emoteTab:AddLabel ("━━━━━━━ Aqui puedes elegir tu TAG ━━━━━━━").TextSize = 17
 
 -- 🌈 TAG ARCOÍRIS - BossKenzou

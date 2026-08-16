@@ -723,26 +723,21 @@ pets:AddSwitch("Auto Buy AURA", function(bool)
     end
 end)
 
--- 🎭 TAB DE EMOTES (o cualquier otro nombre de tab)
 local emoteTab = window:AddTab ("Tags")
 emoteTab:AddLabel ("━━━━━━━ Aqui puedes elegir tu TAG ━━━━━━━").TextSize = 17
 
--- 🌈 TAG ARCOÍRIS - BossKenzou
 local Players = game:GetService ("Players")
 local player = Players.LocalPlayer
 
 local currentTagText = "BossKenzou"
 
--- 🧠 Función para crear o actualizar el tag
 local function createOrUpdateTag(char)
     task.wait(0.5)
     if not char:FindFirstChild("Head") then return end
 
-    -- Borrar tag anterior si ya existe
     local old = char.Head:FindFirstChild("CustomTag")
     if old then old:Destroy() end
 
-    -- Crear BillboardGui
     local billboard = Instance.new("BillboardGui")
     billboard.Name = "CustomTag"
     billboard.Size = UDim2.new(0, 200, 0, 50)
@@ -750,7 +745,6 @@ local function createOrUpdateTag(char)
     billboard.AlwaysOnTop = true
     billboard.Parent = char.Head
 
-    -- Crear texto
     local text = Instance.new("TextLabel")
     text.Parent = billboard
     text.BackgroundTransparency = 1
@@ -761,7 +755,6 @@ local function createOrUpdateTag(char)
     text.TextScaled = true
     text.Font = Enum.Font.GothamBold
 
-    -- 🌈 Efecto arcoíris dinámico
     task.spawn(function()
         while billboard.Parent and text.Parent do
             local t = tick() * 1 -- velocidad del color
@@ -771,15 +764,11 @@ local function createOrUpdateTag(char)
     end)
 end
 
--- 📦 Crear tag al cargar personaje
 player.CharacterAdded:Connect(createOrUpdateTag)
 if player.Character then createOrUpdateTag(player.Character) end
 
-
--- 📦 Crear tag al cargar personaje
 player.CharacterAdded:Connect(createOrUpdateTag)
 if player.Character then createOrUpdateTag(player.Character) end
-
 
 emoteTab:AddButton("🔥 PrimeKenzou", function()
     currentTagText = "🔥 PrimeKenzou 🔥"
@@ -788,11 +777,11 @@ emoteTab:AddButton("🔥 PrimeKenzou", function()
     library:Notification("✅ Tag aplicado: PrimeKenzou")
 end)
 
-emoteTab:AddButton("🔥 Team Honny", function()
+emoteTab:AddButton("🔥 FNOP", function()
     currentTagText = "🔥 Team Honny 🔥"
     currentTagColor = Color3.fromRGB(255, 70, 70)
     createOrUpdateTag(player.Character)
-    library:Notification("✅ Tag aplicado: Team Honny")
+    library:Notification("✅ Tag aplicado: FNOP")
 end)
 
 emoteTab:AddButton("👑 ScriptDeveloper", function()
@@ -809,9 +798,8 @@ emoteTab:AddButton("⚡ Somos DEZZ", function()
     library:Notification("✅ Tag aplicado: Somos DEZZ")
 end)
 
-emoteTab:AddLabel("━━━━━━━ Here you can delete your TAG ━━━━━━━").TextSize = 17
+emoteTab:AddLabel("Remove Tag").TextSize = 17
 
--- 🗑️ Botón opcional para quitar el tag
 emoteTab:AddButton("❌ Quit Tag", function()
     if player.Character and player.Character:FindFirstChild("Head") then
         local old = player.Character.Head:FindFirstChild("CustomTag")

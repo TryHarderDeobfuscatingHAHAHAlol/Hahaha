@@ -723,6 +723,380 @@ pets:AddSwitch("Auto Buy AURA", function(bool)
     end
 end)
 
+pets:AddLabel("━━━━━━━ Equipar Pet de FARM ━━━━━━━")
+
+pets:AddButton("Equipar 8 Neon Guardian", function()
+    print("[⚙️] Equipando 8 Neon Guardian...")
+
+    local LocalPlayer = game:GetService("Players").LocalPlayer
+    local ReplicatedStorage = game:GetService("ReplicatedStorage")
+
+    local equipPetEvent = ReplicatedStorage:WaitForChild("rEvents"):FindFirstChild("equipPetEvent")
+    if not equipPetEvent then
+        warn("❌ No se encontró 'equipPetEvent'.")
+        return
+    end
+
+    local petsFolder = LocalPlayer:FindFirstChild("petsFolder")
+    if not petsFolder then
+        warn("❌ No se encontró 'petsFolder'.")
+        return
+    end
+
+    for _, folder in pairs(petsFolder:GetChildren()) do
+        if folder:IsA("Folder") then
+            for _, pet in pairs(folder:GetChildren()) do
+                equipPetEvent:FireServer("unequipPet", pet)
+            end
+        end
+    end
+
+    task.wait(0.1) -- pequeño delay para asegurar que se procese el desequipado
+
+    local equipped = 0
+    local maxEquip = 8
+    for _, folder in pairs(petsFolder:GetChildren()) do
+        if folder:IsA("Folder") then
+            for _, pet in pairs(folder:GetChildren()) do
+                if pet.Name == "Neon Guardian" then
+                    equipPetEvent:FireServer("equipPet", pet)
+                    equipped += 1
+                    print("[✅] Equipado Neon Guardian #" .. equipped)
+                    if equipped >= maxEquip then
+                        print("[🏁] Se equiparon 8 Neon Guardian(s).")
+                        return
+                    end
+                end
+            end
+        end
+    end
+
+    print("[🏁] Se equiparon " .. equipped .. " Neon Guardian(s).")
+end)
+
+pets:AddButton("Equipar 8 Darkstar Hunter", function()
+    print("[⚙️] Equipando 8 Darkstar Hunter...")
+
+    local LocalPlayer = game:GetService("Players").LocalPlayer
+    local ReplicatedStorage = game:GetService("ReplicatedStorage")
+
+    local equipPetEvent = ReplicatedStorage:WaitForChild("rEvents"):FindFirstChild("equipPetEvent")
+    if not equipPetEvent then
+        warn("❌ No se encontró 'equipPetEvent'.")
+        return
+    end
+
+    local petsFolder = LocalPlayer:FindFirstChild("petsFolder")
+    if not petsFolder then
+        warn("❌ No se encontró 'petsFolder'.")
+        return
+    end
+
+    for _, folder in pairs(petsFolder:GetChildren()) do
+        if folder:IsA("Folder") then
+            for _, pet in pairs(folder:GetChildren()) do
+                equipPetEvent:FireServer("unequipPet", pet)
+            end
+        end
+    end
+
+    task.wait(0.1) -- pequeño delay para asegurar que se procese el desequipado
+
+    local equipped = 0
+    local maxEquip = 8
+    for _, folder in pairs(petsFolder:GetChildren()) do
+        if folder:IsA("Folder") then
+            for _, pet in pairs(folder:GetChildren()) do
+                if pet.Name == "Darkstar Hunter" then
+                    equipPetEvent:FireServer("equipPet", pet)
+                    equipped += 1
+                    print("[✅] Equipado Darkstar Hunter #" .. equipped)
+                    if equipped >= maxEquip then
+                        print("[🏁] Se equiparon 8 Darkstar Hunter(s).")
+                        return
+                    end
+                end
+            end
+        end
+    end
+
+    print("[🏁] Se equiparon " .. equipped .. " Darkstar Hunter(s).")
+end)
+
+pets:AddButton("Auto Vender Mascotas", function()
+    local petsFolder = game.Players.LocalPlayer:FindFirstChild("petsFolder")
+    local rEvents = ReplicatedStorage:FindFirstChild("rEvents")
+    local sellEvent = rEvents and (rEvents:FindFirstChild("sellPetEvent") or rEvents:FindFirstChild("SellPetEvent"))
+
+    if not petsFolder then
+        warn("❌ No se encontró la carpeta 'petsFolder'.")
+        return
+    end
+    if not sellEvent then
+        warn("❌ No se encontró el evento 'sellPetEvent'.")
+        return
+    end
+
+    local autoSellPetsByName = {
+        ["Blue Birdie"] = true,
+        ["Orange Hedgehog"] = true,
+        ["Red Kitty"] = true,
+        ["Blue Bunny"] = true,
+        ["Silver Dog"] = true,
+        ["Dark Vampy"] = true,
+        ["Dark Golem"] = true,
+        ["Green Butterfly"] = true,
+        ["Yellow Butterfly"] = true,
+        ["Crimson Falcon"] = true,
+        ["Purple Dragon"] = true,
+        ["Orange Pegasus"] = true,
+        ["Purple Falcon"] = true,
+        ["Red Dragon"] = true,
+        ["White Pegasus"] = true
+    }
+
+    local totalSold = 0
+    for _, rarityFolder in pairs(petsFolder:GetChildren()) do
+        if rarityFolder:IsA("Folder") then
+            for _, pet in pairs(rarityFolder:GetChildren()) do
+                if autoSellPetsByName[pet.Name] then
+                    pcall(function()
+                        if sellEvent:IsA("RemoteFunction") then
+                            sellEvent:InvokeServer("sellPet", pet)
+                        else
+                            sellEvent:FireServer("sellPet", pet)
+                        end
+                    end)
+                    print("💸 Vendido:", pet.Name)
+                    totalSold += 1
+                    task.wait(0.1)
+                end
+            end
+        end
+    end
+    print("Total vendido:", totalSold)
+end)
+
+pets:AddButton("Auto Vender Neon y Dark", function()
+    local petsFolder = game.Players.LocalPlayer:FindFirstChild("petsFolder")
+    local rEvents = ReplicatedStorage:FindFirstChild("rEvents")
+    local sellEvent = rEvents and (rEvents:FindFirstChild("sellPetEvent") or rEvents:FindFirstChild("SellPetEvent"))
+
+    if not petsFolder then
+        warn("❌ No se encontró la carpeta 'petsFolder'.")
+        return
+    end
+    if not sellEvent then
+        warn("❌ No se encontró el evento 'sellPetEvent'.")
+        return
+    end
+
+    local autoSellPetsByName = {
+        ["Darkstar Hunter"] = true,
+        ["Neon Guardian"] = true,
+    }
+
+    local totalSold = 0
+    for _, rarityFolder in pairs(petsFolder:GetChildren()) do
+        if rarityFolder:IsA("Folder") then
+            for _, pet in pairs(rarityFolder:GetChildren()) do
+                if autoSellPetsByName[pet.Name] then
+                    pcall(function()
+                        if sellEvent:IsA("RemoteFunction") then
+                            sellEvent:InvokeServer("sellPet", pet)
+                        else
+                            sellEvent:FireServer("sellPet", pet)
+                        end
+                    end)
+                    print("💸 Vendido:", pet.Name)
+                    totalSold += 1
+                    task.wait(0.1)
+                end
+            end
+        end
+    end
+    print("Total vendido:", totalSold)
+end)
+
+
+pets:AddLabel("━━━━━━━ Equipar Pet PACKS ━━━━━━━")
+
+pets:AddButton("Equipar 8 Mighty Monster", function()
+    print("[⚙️] Equipando 8 Mighty Monster...")
+
+    local LocalPlayer = game:GetService("Players").LocalPlayer
+    local ReplicatedStorage = game:GetService("ReplicatedStorage")
+
+    local equipPetEvent = ReplicatedStorage:WaitForChild("rEvents"):FindFirstChild("equipPetEvent")
+    if not equipPetEvent then
+        warn("❌ No se encontró 'equipPetEvent'.")
+        return
+    end
+
+    local petsFolder = LocalPlayer:FindFirstChild("petsFolder")
+    if not petsFolder then
+        warn("❌ No se encontró 'petsFolder'.")
+        return
+    end
+
+    for _, folder in pairs(petsFolder:GetChildren()) do
+        if folder:IsA("Folder") then
+            for _, pet in pairs(folder:GetChildren()) do
+                equipPetEvent:FireServer("unequipPet", pet)
+            end
+        end
+    end
+
+    task.wait(0.1) -- pequeño delay para asegurar que se procese el desequipado
+
+    local equipped = 0
+    local maxEquip = 8
+    for _, folder in pairs(petsFolder:GetChildren()) do
+        if folder:IsA("Folder") then
+            for _, pet in pairs(folder:GetChildren()) do
+                if pet.Name == "Mighty Monster" then
+                    equipPetEvent:FireServer("equipPet", pet)
+                    equipped += 1
+                    print("[✅] Equipado Mighty Monster #" .. equipped)
+                    if equipped >= maxEquip then
+                        print("[🏁] Se equiparon 8 Mighty Monster(s).")
+                        return
+                    end
+                end
+            end
+        end
+    end
+
+    print("[🏁] Se equiparon " .. equipped .. " Mighty Monster(s).")
+end)
+
+pets:AddButton("Equipar 8 Tribal Overlord", function()
+    print("[⚙️] Equipando 8 Tribal Overlord...")
+
+    local LocalPlayer = game:GetService("Players").LocalPlayer
+    local ReplicatedStorage = game:GetService("ReplicatedStorage")
+
+    local equipPetEvent = ReplicatedStorage:WaitForChild("rEvents"):FindFirstChild("equipPetEvent")
+    if not equipPetEvent then
+        warn("❌ No se encontró 'equipPetEvent'.")
+        return
+    end
+
+    local petsFolder = LocalPlayer:FindFirstChild("petsFolder")
+    if not petsFolder then
+        warn("❌ No se encontró 'petsFolder'.")
+        return
+    end
+
+    for _, folder in pairs(petsFolder:GetChildren()) do
+        if folder:IsA("Folder") then
+            for _, pet in pairs(folder:GetChildren()) do
+                equipPetEvent:FireServer("unequipPet", pet)
+            end
+        end
+    end
+
+    task.wait(0.1) -- pequeño delay para asegurar que se procese el desequipado
+
+    local equipped = 0
+    local maxEquip = 8
+    for _, folder in pairs(petsFolder:GetChildren()) do
+        if folder:IsA("Folder") then
+            for _, pet in pairs(folder:GetChildren()) do
+                if pet.Name == "Tribal Overlord" then
+                    equipPetEvent:FireServer("equipPet", pet)
+                    equipped += 1
+                    print("[✅] Equipado Tribal Overlord #" .. equipped)
+                    if equipped >= maxEquip then
+                        print("[🏁] Se equiparon 8 Tribal Overlord(s).")
+                        return
+                    end
+                end
+            end
+        end
+    end
+
+    print("[🏁] Se equiparon " .. equipped .. " Tribal Overlord(s).")
+end)
+
+pets:AddButton("Equip 8 Swift Samurai", function()
+    print("Botón presionado: equipando 8 Swift Samurai")
+
+    local LocalPlayer = game:GetService("Players").LocalPlayer
+    local ReplicatedStorage = game:GetService("ReplicatedStorage")
+
+    local petsFolder = LocalPlayer:FindFirstChild("petsFolder")
+    if not petsFolder then return end
+
+    for _, folder in pairs(petsFolder:GetChildren()) do
+        if folder:IsA("Folder") then
+            for _, pet in pairs(folder:GetChildren()) do
+                ReplicatedStorage.rEvents.equipPetEvent:FireServer("unequipPet", pet)
+            end
+        end
+    end
+    task.wait(0.1)
+
+    local equipped = 0
+    local maxEquip = 8
+    for _, folder in pairs(petsFolder:GetChildren()) do
+        if folder:IsA("Folder") then
+            for _, pet in pairs(folder:GetChildren()) do
+                if pet.Name == "Swift Samurai" then
+                    ReplicatedStorage.rEvents.equipPetEvent:FireServer("equipPet", pet)
+                    equipped += 1
+                    print("Equipado Swift Samurai #" .. equipped)
+
+                    if equipped >= maxEquip then
+                        return -- salir cuando ya haya 8 equipados
+                    end
+                end
+            end
+        end
+    end
+
+    print("Se equiparon " .. equipped .. " Swift Samurai")
+end)
+
+pets:AddButton("Equip 8 Wild Wizard", function()
+    print("Botón presionado: equipando 8 Wild Wizard")
+
+    local LocalPlayer = game:GetService("Players").LocalPlayer
+    local ReplicatedStorage = game:GetService("ReplicatedStorage")
+
+    local petsFolder = LocalPlayer:FindFirstChild("petsFolder")
+    if not petsFolder then return end
+
+    for _, folder in pairs(petsFolder:GetChildren()) do
+        if folder:IsA("Folder") then
+            for _, pet in pairs(folder:GetChildren()) do
+                ReplicatedStorage.rEvents.equipPetEvent:FireServer("unequipPet", pet)
+            end
+        end
+    end
+    task.wait(0.1)
+
+    local equipped = 0
+    local maxEquip = 8
+    for _, folder in pairs(petsFolder:GetChildren()) do
+        if folder:IsA("Folder") then
+            for _, pet in pairs(folder:GetChildren()) do
+                if pet.Name == "Wild Wizard" then
+                    ReplicatedStorage.rEvents.equipPetEvent:FireServer("equipPet", pet)
+                    equipped += 1
+                    print("Equipado Wild Wizard #" .. equipped)
+
+                    if equipped >= maxEquip then
+                        return -- salir cuando ya haya 8 equipados
+                    end
+                end
+            end
+        end
+    end
+
+    print("Se equiparon " .. equipped .. " Swift Samurai")
+end)
+
 local emoteTab = window:AddTab ("Tags")
 emoteTab:AddLabel ("━━━━━━━ Aqui puedes elegir tu TAG ━━━━━━━").TextSize = 17
 

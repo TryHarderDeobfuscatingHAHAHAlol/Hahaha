@@ -1302,3 +1302,212 @@ task.spawn(function()
         task.wait(0.25)
     end
 end)
+
+local features = window:AddTab("Stats")
+
+local player = game.Players.LocalPlayer
+local leaderstats = player:WaitForChild("leaderstats")
+local strengthStat = leaderstats:WaitForChild("Strength")
+local durabilityStat = player:WaitForChild("Durability")
+
+local function formatNumber(number)
+    local isNegative = number < 0
+    number = math.abs(number)
+    if number >= 1e15 then
+        return (isNegative and "-" or "") .. string.format("%.2fQa", number / 1e15)
+    elseif number >= 1e12 then
+        return (isNegative and "-" or "") .. string.format("%.2fT", number / 1e12)
+    elseif number >= 1e9 then
+        return (isNegative and "-" or "") .. string.format("%.2fB", number / 1e9)
+    elseif number >= 1e6 then
+        return (isNegative and "-" or "") .. string.format("%.2fM", number / 1e6)
+    elseif number >= 1e3 then
+        return (isNegative and "-" or "") .. string.format("%.2fK",number / 1e3)or "") .. string.format("%.2fK", number / 1e3)
+    else
+        return (isNegative and "-" or "") .. string.format("%.2f", number)
+    end
+end
+
+local function formatNumberWithCommas(number)
+    local formatted = tostring(number):reverse():gsub("(%d%d%d)", "%1,"):reverse()
+    return formatted:gsub("^,", "")
+end
+
+local function formatAbbreviated(number)
+    local abbreviations = {"", "K", "M", "B", "T", "Qa", "Qi"}
+    local index = 1
+    while number >= 1000 and index < #abbreviations do
+        number = number / 1000
+        index = index + 1
+    end
+    return string.format("%.2f", number) ..abbreviations[index]
+end
+
+local function formatDisplay(value)
+    return "[ " .. formatNumberWithCommas(value) .. " | " .. formatAbbreviated(value) .. " ]"
+end
+
+local stopwatchLabel = features:AddLabel("⏱ Tiempo de Repetición: 0d 0h 0m 0s")
+stopwatchLabel.TextSize = 20
+
+local projectedStrengthLabel = features:AddLabel("📈 Fuerza: 0/Hora | 0/Día | 0/Semana | 0/Mes")
+projectedStrengthLabel.TextSize = 17
+
+local projectedDurabilityLabel = features:AddLabel("📉 Durabilidad: 0/Hora | 0/Día | 0/Semana | 0/Mes")
+projectedDurabilityLabel.TextSize = 17
+
+features:AddLabel("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━")
+
+features:AddLabel("Personal Statistics").TextSize = 17
+
+local strengthLabel = features:AddLabel("Fuerza: 0 | Ganado: 0")
+    while task.wait(0.2) do
+strengthlabel.TextSize = 17
+
+local durabilityLabel = features:AddLabel("Durabilidad: 0 | Ganado: 0")
+durabilityLabel.TextSize = 17
+
+local startTime = tick()
+local initialStrength = strengthStat.Value
+local initialDurability = player:WaitForChild("Durability").Value
+local trackingStarted = false
+
+local strengthHistory = {}
+local durabilityHistory = {}
+local calculationInterval = 10
+
+task.spawn(function()
+    local lastCalcTime = tick()
+
+        local currentTime = tick()
+        local currentStrength = strengthStat.Value
+        local currentDurability = durabilityStat.Value
+
+        if not trackingStarted then
+            if currentStrength > initialStrength or currentDurability > initialDurability then
+                trackingStarted = true
+                startTime = currentTime
+                strengthHistory = {}
+                durabilityHistory = {}
+                if library.Notification then
+                    library:Notification("⏱ Training started — strength detected.")
+            local m = math.floor((elapsed % 3600) / 60)
+                else
+                    print “[ ⁇ │] Chronometer started — canvases to ganar smokes durability.")
+                end
+            end
+        end
+
+
+        if trackStarted hold
+            local elapsed = currentTime - startTime
+            local d = math.floor (elapsed / 86400)
+            local h = math.floor (elapsed % 86400) / 3600)
+            local s = mah.floor (elapsed % 60)
+
+            stopwatchLabel.Text = string.format ("⏱ Repetition Weather: %dd %dh %dm %ds", d, h, m, s)
+
+            local strengthGain = currentStrength - initialStrength
+            local durabilityGain = currentDurability - initialDurability
+
+            strengthLabel.Text = "Fuerza: " .. formatNumber(currentStrength) .. " | Ganado: " .. formatNumber(strengthGain)
+            durabilityLabel.Text = "Durabilidad: " .. formatNumber(currentDurability) .. " | Ganado: " .. formatNumber(durabilityGain)
+
+            table.insert(strengthHistory, {time = currentTime, value = currentStrength})
+            table.insert(durabilityHistory, {time = currentTime, value = currentDurability})
+
+            while #strengthHistory > 0 and currentTime - strengthHistory[1].time >calculationInterval do
+                table.remove(strengthHistory, 1)
+            end
+            while #durabilityHistory > 0 and currentTime - durabilityHistory[1].time > calculationInterval do
+                table.remove(durabilityHistory, 1)
+            end
+
+            if currentTime - lastCalcTime >= calculationInterval then
+                lastCalcTime = currentTime
+
+                if #strengthHistory >= 2 then
+                    local delta = strengthHistory[#strengthHistory].value - strengthHistory[1].value
+                    local perSec = delta / calculationInterval
+                    projectedStrengthLabel.Text = string.format(
+                        "📈 Fuerza: %s/Hora | %s/Día | %s/Semana | %s/Mes",
+                        formatNumber(perSec * 3600),
+                        formatNumber(perSec * 86400),
+                        formatNumber(perSec * 604800),
+                        formatNumber(perSec * 2592000)
+                    )
+                end
+
+                if #durabilityHistory >= 2 then
+                    local delta = durabilityHistory[#durabilityHistory].value - durabilityHistory[1].value
+                    local perSec = delta / calculationInterval
+                    projectedDurabilityLabel.Text = string.format(
+                        "📉 Durabilidad: %s/Hora | %s/Día | %s/Semana | %s/Mes",
+                        formatNumber(perSec * 3600),
+                        formatNumber(perSec * 86400),
+                        formatNumber(perSec * 604800),
+                        formatNumber(perSec * 2592000)
+                    )
+                end
+            end
+        end
+    end
+end)
+
+
+features:AddLabel("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━")
+features:AddLabel("Ver Estadísticas de Otros Jugadores").TextSize = 17
+
+local SelectPlayerName = ""
+
+local PlayerDrop = features:AddDropdown("Seleccionar Jugador", function(Value)
+    SelectPlayerName = Value:match("| (.+)")
+end)
+
+for _, Plr in ipairs(game:GetService("Players"):GetPlayers()) do
+    local displayName = Plr.DisplayName .. " | " .. Plr.Name
+    PlayerDrop:Add(displayName)rebirthButton")
+    -- Find or create the blocker
+end
+
+local labelStrengthOther = features:AddLabel("Fuerza: N/A")
+local labelDurabilityOther = features:AddLabel("Durabilidad: N/A")
+local labelRebirthOther = features:AddLabel("Renacimientos: N/A")
+
+features:AddButton("🛡️ Activar Anti-Touch Rebirth", function()
+    local player = game:GetService("Players").LocalPlayer
+    local gui = player:WaitForChild("PlayerGui"):WaitForChild("gameGui")
+    local sideButtons = gui:WaitForChild("sideButtons")
+    local rebirthButton = sideButtons:WaitForChild("rebirthButton"))
+    if not blocker then
+        blocker = Instance.new("Frame")
+
+    local blocker = sideButtons:FindFirstChild("RebirthBlocker")
+        blocker.Name = "RebirthBlocker"
+        blocker.BackgroundTransparency = 1
+        blocker.BackgroundColor3 = Color3.new(0, 0, 0)
+        blocker.BorderSizePixel = 0
+        blocker.Active = true
+        blocker.ZIndex = rebirthButton.ZIndex + 1
+        blocker.Size = rebirthButton.Size
+        blocker.Position = rebirthButton.Position
+        blocker.Parent = sideButtons
+    end
+
+    local enabled = not blocker.Visible
+    blocker.Visible = enabled
+
+    if enabled then
+        Elerium:Notify({
+            Title = "REBIRTH",
+            Content = "🔒 Anti-Touch Activated — el botón Rebirth está bloqueado.",
+            Duration = 4
+        })
+    else
+        Elerium:Notify({
+            Title = "REBIRTH",
+            Content = "✅ Anti-Touch Deactivated — el botón Rebirth vuelve a funcionar.",
+            Duration = 4
+        })
+    end
+end)

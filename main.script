@@ -1,4 +1,4 @@
-local library = loadstring(game:HttpGet("https://raw.githubusercontent.com/TryHarderDeobfuscatingHAHAHAlol/Secret-UI/refs/heads/main/Library-Dezzy.lua", true))()
+local library = loadstring(game:HttpGet("https://raw.githubusercontent.com/TryHarderDeobfuscatingHAHAHAlol/Secret-UI/refs/heads/main/FNOP.Library", true))()
 
 local window = library:AddWindow("FNOP | PRIVATE - By Kenzou ", {
     main_color = Color3.fromRGB(120, 0, 0),

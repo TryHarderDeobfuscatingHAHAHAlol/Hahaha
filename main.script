@@ -1303,4 +1303,4 @@ task.spawn(function()
     end
 end)
 
-local rebirthTab = window:AddTab("Rebirths")
+local rebirth = window:AddTab("Rebirths")

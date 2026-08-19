@@ -1306,7 +1306,7 @@ end)
 local rebirth = window:AddTab("Rebirths")
 rebirths:Addlabel("Rebirth Farming")
 
-local targetSwitch = rebirthsTab:AddSwitch("Auto Rebirth Target", function(bool)
+local targetSwitch = rebirths:AddSwitch("Auto Rebirth Target", function(bool)
     _G.targetRebirthActive = bool
     
     if bool then
@@ -1316,7 +1316,6 @@ local targetSwitch = rebirthsTab:AddSwitch("Auto Rebirth Target", function(bool)
             _G.infiniteRebirthActive = false
         end
         
-        -- Start target rebirth loop
         spawn(function()
             while _G.targetRebirthActive and wait(0.1) do
                 local currentRebirths = game.Players.LocalPlayer.leaderstats.Rebirths.Value

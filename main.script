@@ -2,7 +2,7 @@ local library = loadstring(game:HttpGet("https://raw.githubusercontent.com/TryHa
 
 local window = library:AddWindow("FNOP | PRIVATE - By Kenzou ", {
     main_color = Color3.fromRGB(120, 0, 0),
-    min_size = Vector2.new(444, 470),
+    min_size = Vector2.new(650, 870),
     can_minimize = false,
 })
 
@@ -821,6 +821,55 @@ pets:AddButton("Equipar 8 Darkstar Hunter", function()
     end
 
     print("[🏁] Se equiparon " .. equipped .. " Darkstar Hunter(s).")
+end)
+
+pets:AddButton("Equipar 8 Cool Guy Larry", function()
+    print("[⚙️] Equipando 8 Cool Guy Larry...")
+
+    local LocalPlayer = game:GetService("Players").LocalPlayer
+    local ReplicatedStorage = game:GetService("ReplicatedStorage")
+
+    local equipPetEvent = ReplicatedStorage:WaitForChild("rEvents"):FindFirstChild("equipPetEvent")
+    if not equipPetEvent then
+        warn("❌ No se encontró 'equipPetEvent'.")
+        return
+    end
+
+    local petsFolder = LocalPlayer:FindFirstChild("petsFolder")
+    if not petsFolder then
+        warn("❌ No se encontró 'petsFolder'.")
+        return
+    end
+
+    for _, folder in pairs(petsFolder:GetChildren()) do
+        if folder:IsA("Folder") then
+            for _, pet in pairs(folder:GetChildren()) do
+                equipPetEvent:FireServer("unequipPet", pet)
+            end
+        end
+    end
+
+    task.wait(0.1) -- pequeño delay para asegurar que se procese el desequipado
+
+    local equipped = 0
+    local maxEquip = 8
+    for _, folder in pairs(petsFolder:GetChildren()) do
+        if folder:IsA("Folder") then
+            for _, pet in pairs(folder:GetChildren()) do
+                if pet.Name == "Cool Guy Larry" then
+                    equipPetEvent:FireServer("equipPet", pet)
+                    equipped += 1
+                    print("[✅] Equipado Cool Guy Larry #" .. equipped)
+                    if equipped >= maxEquip then
+                        print("[🏁] Se equiparon 8 Neon Guardian(s).")
+                        return
+                    end
+                end
+            end
+        end
+    end
+
+    print("[🏁] Se equiparon " .. equipped .. " Cool Guy Larry(s).")
 end)
 
 pets:AddButton("Auto Vender Mascotas", function()

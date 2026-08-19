@@ -1449,3 +1449,40 @@ task.spawn(function()
         task.wait(0.25)
     end
 end)
+
+local farmTab = window:AddTab("Rebirths")
+farmTab:AddLabel("Rebirth Farming")
+
+local switch = Rebirths:AddSwitch("Auto Rebirth (Normal)", function(state)
+    autoRebirth = state
+    while autoRebirth do
+        game:GetService("ReplicatedStorage"):WaitForChild("rEvents"):WaitForChild("rebirthRemote"):InvokeServer("rebirthRequest")
+        task.wait(0.1)
+    end
+end)
+
+local autoSizeLoop = nil
+
+local switch = Rebirths:AddSwitch("Auto Size 2", function(state)
+    if state then
+        autoSizeLoop = task.spawn(function()
+            while task.wait(0) do
+                game:GetService("ReplicatedStorage").rEvents.changeSpeedSizeRemote:InvokeServer("changeSize", 2)
+            end
+        end)
+    else
+        if autoSizeLoop then
+            task.cancel(autoSizeLoop)
+            autoSizeLoop = nil
+        end
+    end
+end)
+
+local switch = Rebirths:AddSwitch("Hide All Frames", function(state)
+    local rSto = game:GetService("ReplicatedStorage")
+		for _, obj in pairs(rSto:GetChildren()) do
+			if obj.Name:match("Frame$") then
+				obj.Visible = not state
+			end
+		end
+end)

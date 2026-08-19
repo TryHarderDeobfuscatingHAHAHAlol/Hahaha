@@ -1453,36 +1453,90 @@ end)
 local farmTab = window:AddTab("Rebirths")
 farmTab:AddLabel("Rebirth Farming")
 
-local switch = Rebirths:AddSwitch("Auto Rebirth (Normal)", function(state)
-    autoRebirth = state
-    while autoRebirth do
-        game:GetService("ReplicatedStorage"):WaitForChild("rEvents"):WaitForChild("rebirthRemote"):InvokeServer("rebirthRequest")
-        task.wait(0.1)
+-- Guardar objetivo de rebirths
+local targetRebirthAmount = nil
+local farmingTarget = false
+
+-- Input de rebirth objetivo
+farmTab:AddTextBox("Target number of Rebirths", function(value)
+    local amount = tonumber(value) or 1
+    local currentRebirths = leaderstats.Rebirths.Value
+    if amount >= currentRebirths then
+        targetRebirthAmount = amount
     end
-end)
+end, {clear = false})
 
-local autoSizeLoop = nil
+local targetRebirthToggle = farmTab:AddSwitch("Start", function(enabled)
+    farmingTarget = enabled
+    if enabled then
+        task.spawn(function()
+            while farmingTarget do
+                local currentRebirths = leaderstats.Rebirths.Value
+                local requiredStrength = 10000 + 5000 * currentRebirths
 
-local switch = Rebirths:AddSwitch("Auto Size 2", function(state)
-    if state then
-        autoSizeLoop = task.spawn(function()
-            while task.wait(0) do
-                game:GetService("ReplicatedStorage").rEvents.changeSpeedSizeRemote:InvokeServer("changeSize", 2)
+                -- Si ya alcanzó el objetivo, apagar toggle
+                if targetRebirthAmount and currentRebirths >= targetRebirthAmount then
+                    targetRebirthToggle:Set(false)
+                    farmingTarget = false
+                    break
+                end
+
+                -- Hacer rebirth si ya tienes fuerza suficiente
+                if leaderstats.Strength.Value >= requiredStrength then
+                    replicatedStorage.rEvents.rebirthRemote:InvokeServer("rebirthRequest")
+                    task.wait(0.7)
+                else
+                    -- Farmear fuerza
+                    for i = 1, repSpeed do
+                        MuscleEvent:FireServer("rep")
+                    end
+                end
+
+                task.wait(0.1)
             end
         end)
-    else
-        if autoSizeLoop then
-            task.cancel(autoSizeLoop)
-            autoSizeLoop = nil
-        end
     end
 end)
 
-local switch = Rebirths:AddSwitch("Hide All Frames", function(state)
-    local rSto = game:GetService("ReplicatedStorage")
-		for _, obj in pairs(rSto:GetChildren()) do
-			if obj.Name:match("Frame$") then
-				obj.Visible = not state
-			end
-		end
+farmTab:AddSwitch("Auto Teleport to the king", function(enabled)
+    if enabled then
+        _G.AutoTeleportKing = true
+        local targetPosition = Vector3.new(-8750.1318359375, 124.37654876708984, -5861.2666015625)
+
+        while _G.AutoTeleportKing do
+            local player = game.Players.LocalPlayer
+            local char = player.Character
+            if char then
+                local rootPart = char:FindFirstChild("HumanoidRootPart")
+                if rootPart then
+                    rootPart.CFrame = CFrame.new(targetPosition)
+                    rootPart.Velocity = Vector3.new(0, 0, 0)
+                    rootPart.RotVelocity = Vector3.new(0, 0, 0)
+                end
+            end
+            task.wait(0.1)
+        end
+    else
+        _G.AutoTeleportKing = false
+    end
+end)
+
+farmTab:AddSwitch("Auto size 2", function(enabled)
+    if enabled then
+        _G.AutoSize2 = true
+        while _G.AutoSize2 do
+            local args = {
+                "changeSize",
+                2
+            }
+            game:GetService("ReplicatedStorage")
+                :WaitForChild("rEvents")
+                :WaitForChild("changeSpeedSizeRemote")
+                :InvokeServer(unpack(args))
+
+            task.wait(1)
+        end
+    else
+        _G.AutoSize2 = false
+    end
 end)

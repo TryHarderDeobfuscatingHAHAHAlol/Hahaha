@@ -861,7 +861,7 @@ pets:AddButton("Equipar 8 Cool Guy Larry", function()
                     equipped += 1
                     print("[✅] Equipado Cool Guy Larry #" .. equipped)
                     if equipped >= maxEquip then
-                        print("[🏁] Se equiparon 8 Neon Guardian(s).")
+                        print("[🏁] Se equiparon 8 Cool Guy Larry(s).")
                         return
                     end
                 end
@@ -870,6 +870,104 @@ pets:AddButton("Equipar 8 Cool Guy Larry", function()
     end
 
     print("[🏁] Se equiparon " .. equipped .. " Cool Guy Larry(s).")
+end)
+
+pets:AddButton("Equipar 8 Gold Warrior", function()
+    print("[⚙️] Equipando 8 Gold Warrior...")
+
+    local LocalPlayer = game:GetService("Players").LocalPlayer
+    local ReplicatedStorage = game:GetService("ReplicatedStorage")
+
+    local equipPetEvent = ReplicatedStorage:WaitForChild("rEvents"):FindFirstChild("equipPetEvent")
+    if not equipPetEvent then
+        warn("❌ No se encontró 'equipPetEvent'.")
+        return
+    end
+
+    local petsFolder = LocalPlayer:FindFirstChild("petsFolder")
+    if not petsFolder then
+        warn("❌ No se encontró 'petsFolder'.")
+        return
+    end
+
+    for _, folder in pairs(petsFolder:GetChildren()) do
+        if folder:IsA("Folder") then
+            for _, pet in pairs(folder:GetChildren()) do
+                equipPetEvent:FireServer("unequipPet", pet)
+            end
+        end
+    end
+
+    task.wait(0.1) -- pequeño delay para asegurar que se procese el desequipado
+
+    local equipped = 0
+    local maxEquip = 8
+    for _, folder in pairs(petsFolder:GetChildren()) do
+        if folder:IsA("Folder") then
+            for _, pet in pairs(folder:GetChildren()) do
+                if pet.Name == "Gold Warrior" then
+                    equipPetEvent:FireServer("equipPet", pet)
+                    equipped += 1
+                    print("[✅] Gold Warrior #" .. equipped)
+                    if equipped >= maxEquip then
+                        print("[🏁] Se equiparon 8 Gold Warrior(s).")
+                        return
+                    end
+                end
+            end
+        end
+    end
+
+    print("[🏁] Se equiparon " .. equipped .. " Gold Warrior(s).")
+end)
+
+pets:AddButton("Equipar 8 Cybernetic Showdown Dragon", function()
+    print("[⚙️] Equipando 8 Cybernetic Showdown Dragon...")
+
+    local LocalPlayer = game:GetService("Players").LocalPlayer
+    local ReplicatedStorage = game:GetService("ReplicatedStorage")
+
+    local equipPetEvent = ReplicatedStorage:WaitForChild("rEvents"):FindFirstChild("equipPetEvent")
+    if not equipPetEvent then
+        warn("❌ No se encontró 'equipPetEvent'.")
+        return
+    end
+
+    local petsFolder = LocalPlayer:FindFirstChild("petsFolder")
+    if not petsFolder then
+        warn("❌ No se encontró 'petsFolder'.")
+        return
+    end
+
+    for _, folder in pairs(petsFolder:GetChildren()) do
+        if folder:IsA("Folder") then
+            for _, pet in pairs(folder:GetChildren()) do
+                equipPetEvent:FireServer("unequipPet", pet)
+            end
+        end
+    end
+
+    task.wait(0.1) -- pequeño delay para asegurar que se procese el desequipado
+
+    local equipped = 0
+    local maxEquip = 8
+    for _, folder in pairs(petsFolder:GetChildren()) do
+        if folder:IsA("Folder") then
+            for _, pet in pairs(folder:GetChildren()) do
+                if pet.Name == "Cybernetic Showdown Dragon" then
+                    equipPetEvent:FireServer("equipPet", pet)
+                    equipped += 1
+                    print("[✅] Equipado Cybernetic Showdown Dragon #" .. equipped)
+                    if equipped >= maxEquip then
+                        print("[🏁] Se equiparon 8 Cybernetic Showdown Dragon(s).")
+                        return
+                    end
+                end
+            end
+        end
+    end
+
+    print("[🏁] Se equiparon " .. equipped .. " Cybernetic Showdown Dragon(s).")
 end)
 
 pets:AddButton("Auto Vender Mascotas", function()
@@ -1194,14 +1292,14 @@ player.CharacterAdded:Connect(createOrUpdateTag)
 if player.Character then createOrUpdateTag(player.Character) end
 
 emoteTab:AddButton("🔥 PrimeKenzou", function()
-    currentTagText = "🔥 PrimeKenzou 🔥"
+    currentTagText = "PrimeKenzou🔥"
     currentTagColor = Color3.fromRGB(255, 70, 70)
     createOrUpdateTag(player.Character)
     library:Notification("✅ Tag aplicado: PrimeKenzou")
 end)
 
 emoteTab:AddButton("🔥 FNOP", function()
-    currentTagText = "FNOP 🔥"
+    currentTagText = "FNOP🔥"
     currentTagColor = Color3.fromRGB(255, 70, 70)
     createOrUpdateTag(player.Character)
     library:Notification("✅ Tag aplicado: FNOP")
@@ -1351,44 +1449,3 @@ task.spawn(function()
         task.wait(0.25)
     end
 end)
-
-local rebirths = window:AddTab("Rebirths")
-rebirths:Addlabel("Rebirth Farming")
-
-local targetSwitch
-targetSwitch = rebirths:AddSwitch("Auto Rebirth Target", function(bool)
-    _G.targetRebirthActive = bool
-    
-    if bool then
-        -- Turn off infinite rebirth if it's on
-        if _G.infiniteRebirthActive and infiniteSwitch then
-            infiniteSwitch:Set(false)
-            _G.infiniteRebirthActive = false
-        end
-        
-        task.spawn(function()
-            while _G.targetRebirthActive and task.wait(0.1) do
-                local leaderstats = game.Players.LocalPlayer:FindFirstChild("leaderstats")
-                local currentRebirths = leaderstats and leaderstats:FindFirstChild("Rebirths") and leaderstats.Rebirths.Value or 0
-                
-                if currentRebirths >= targetRebirthValue then
-                    targetSwitch:Set(false)
-                    _G.targetRebirthActive = false
-                    
-                    game:GetService("StarterGui"):SetCore("SendNotification", {
-                        Title = "Â¡Objetivo Alcanzado!",
-                        Text = "Has alcanzado " .. tostring(targetRebirthValue) .. " renacimientos",
-                        Duration = 5
-                    })
-                    
-                    break
-                end
-                
-                local remote = game:GetService("ReplicatedStorage"):FindFirstChild("rEvents")
-                if remote and remote:FindFirstChild("rebirthRemote") then
-                    remote.rebirthRemote:InvokeServer("rebirthRequest")
-                end
-            end
-        end)
-    end
-end, "Renacimiento automÃ¡tico hasta alcanzar el objetivo")

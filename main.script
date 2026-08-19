@@ -1304,6 +1304,7 @@ task.spawn(function()
 end)
 
 local rebirth = window:AddTab("Rebirths")
+
 rebirths:Addlabel("Rebirth Farming")
 
 local targetSwitch = rebirths:AddSwitch("Auto Rebirth Target", function(bool)

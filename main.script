@@ -723,7 +723,7 @@ pets:AddSwitch("Auto Buy AURA", function(bool)
     end
 end)
 
-pets:AddLabel("━━━━━━━ Equipar Pet de FARM ━━━━━━━")
+pets:AddLabel("Auto Equip Pets")
 
 pets:AddButton("Equipar 8 Neon Guardian", function()
     print("[⚙️] Equipando 8 Neon Guardian...")
@@ -919,7 +919,7 @@ pets:AddButton("Auto Vender Neon y Dark", function()
 end)
 
 
-pets:AddLabel("━━━━━━━ Equipar Pet PACKS ━━━━━━━")
+pets:AddLabel("Auto Equip Pack Pets")
 
 pets:AddButton("Equipar 8 Mighty Monster", function()
     print("[⚙️] Equipando 8 Mighty Monster...")
@@ -1098,7 +1098,7 @@ pets:AddButton("Equip 8 Wild Wizard", function()
 end)
 
 local emoteTab = window:AddTab ("Tags")
-emoteTab:AddLabel ("━━━━━━━ Aqui puedes elegir tu TAG ━━━━━━━").TextSize = 17
+emoteTab:AddLabel ("SELECT YOUR TAG").TextSize = 17
 
 local Players = game:GetService ("Players")
 local player = Players.LocalPlayer
@@ -1152,10 +1152,10 @@ emoteTab:AddButton("🔥 PrimeKenzou", function()
 end)
 
 emoteTab:AddButton("🔥 FNOP", function()
-    currentTagText = "🔥 Team Honny 🔥"
+    currentTagText = "FNOP 🔥"
     currentTagColor = Color3.fromRGB(255, 70, 70)
     createOrUpdateTag(player.Character)
-    library:Notification("✅ Tag aplicado: FNOP")
+    library:Notification("✅ Tag aplicado: FNOP 🔥")
 end)
 
 emoteTab:AddButton("👑 ScriptDeveloper", function()
@@ -1165,11 +1165,11 @@ emoteTab:AddButton("👑 ScriptDeveloper", function()
     library:Notification("✅ Tag aplicado: ScriptDeveloper")
 end)
 
-emoteTab:AddButton("⚡ Somos DEZZ", function()
-    currentTagText = "⚡ Somos DEZZ ⚡"
+emoteTab:AddButton("⚡ KenzouSkidder", function()
+    currentTagText = "KenzouSkidder ⚡"
     currentTagColor = Color3.fromRGB(140, 0, 255)
     createOrUpdateTag(player.Character)
-    library:Notification("✅ Tag aplicado: Somos DEZZ")
+    library:Notification("✅ Tag aplicado: KenzouSkidder")
 end)
 
 emoteTab:AddLabel("Remove Tag").TextSize = 17

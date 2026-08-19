@@ -1103,7 +1103,7 @@ emoteTab:AddLabel ("SELECT YOUR TAG").TextSize = 17
 local Players = game:GetService ("Players")
 local player = Players.LocalPlayer
 
-local currentTagText = "BossKenzou"
+local currentTagText = "BossKenzou💪"
 
 local function createOrUpdateTag(char)
     task.wait(0.5)
@@ -1155,7 +1155,7 @@ emoteTab:AddButton("🔥 FNOP", function()
     currentTagText = "FNOP 🔥"
     currentTagColor = Color3.fromRGB(255, 70, 70)
     createOrUpdateTag(player.Character)
-    library:Notification("✅ Tag aplicado: FNOP 🔥")
+    library:Notification("✅ Tag aplicado: FNOP")
 end)
 
 emoteTab:AddButton("👑 ScriptDeveloper", function()

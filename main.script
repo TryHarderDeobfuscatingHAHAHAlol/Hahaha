@@ -1453,90 +1453,90 @@ end)
 local farmTab = window:AddTab("Rebirths")
 farmTab:AddLabel("Rebirth Farming")
 
--- Guardar objetivo de rebirths
-local targetRebirthAmount = nil
-local farmingTarget = false
+local RebirthData = {
+	Label = farmTab:AddLabel("Rebirths: 0"),
+	TargetLabel = farmTab:AddLabel("Target: None"),
+	Rebirths = PlayerData.Player.leaderstats:WaitForChild("Rebirths"),
+	TargetRebirths = 0,
+	IsAutoRebirthing = false
+}
 
--- Input de rebirth objetivo
-farmTab:AddTextBox("Target number of Rebirths", function(value)
-    local amount = tonumber(value) or 1
-    local currentRebirths = leaderstats.Rebirths.Value
-    if amount >= currentRebirths then
-        targetRebirthAmount = amount
-    end
-end, {clear = false})
+RebirthData.Label.TextSize = 14
+RebirthData.TargetLabel.TextSize = 14
 
-local targetRebirthToggle = farmTab:AddSwitch("Start", function(enabled)
-    farmingTarget = enabled
-    if enabled then
-        task.spawn(function()
-            while farmingTarget do
-                local currentRebirths = leaderstats.Rebirths.Value
-                local requiredStrength = 10000 + 5000 * currentRebirths
-
-                -- Si ya alcanzó el objetivo, apagar toggle
-                if targetRebirthAmount and currentRebirths >= targetRebirthAmount then
-                    targetRebirthToggle:Set(false)
-                    farmingTarget = false
-                    break
-                end
-
-                -- Hacer rebirth si ya tienes fuerza suficiente
-                if leaderstats.Strength.Value >= requiredStrength then
-                    replicatedStorage.rEvents.rebirthRemote:InvokeServer("rebirthRequest")
-                    task.wait(0.7)
-                else
-                    -- Farmear fuerza
-                    for i = 1, repSpeed do
-                        MuscleEvent:FireServer("rep")
-                    end
-                end
-
-                task.wait(0.1)
-            end
-        end)
-    end
+farmTab:AddTextBox("Set Rebirth Target (Required):", function(text)
+	if tonumber(text) and tonumber(text) >= 0 then RebirthData.TargetRebirths = tonumber(text) end
 end)
 
-farmTab:AddSwitch("Auto Teleport to the king", function(enabled)
-    if enabled then
-        _G.AutoTeleportKing = true
-        local targetPosition = Vector3.new(-8750.1318359375, 124.37654876708984, -5861.2666015625)
-
-        while _G.AutoTeleportKing do
-            local player = game.Players.LocalPlayer
-            local char = player.Character
-            if char then
-                local rootPart = char:FindFirstChild("HumanoidRootPart")
-                if rootPart then
-                    rootPart.CFrame = CFrame.new(targetPosition)
-                    rootPart.Velocity = Vector3.new(0, 0, 0)
-                    rootPart.RotVelocity = Vector3.new(0, 0, 0)
-                end
-            end
-            task.wait(0.1)
-        end
-    else
-        _G.AutoTeleportKing = false
-    end
+RebirthData.Switch = farmTab:AddSwitch("Auto Rebirth", function(enabled)
+	if enabled and RebirthData.TargetRebirths > 0 and RebirthData.Rebirths.Value < RebirthData.TargetRebirths then
+		RebirthData.IsAutoRebirthing = true
+		task.spawn(function()
+			while RebirthData.IsAutoRebirthing and RebirthData.Rebirths.Value < RebirthData.TargetRebirths do
+				Services.ReplicatedStorage.rEvents.rebirthRemote:InvokeServer("rebirthRequest")
+				task.wait(0.05)
+			end
+			RebirthData.IsAutoRebirthing = false
+			RebirthData.Switch:Set(false)
+		end)
+	else
+		RebirthData.IsAutoRebirthing = false
+	end
 end)
 
-farmTab:AddSwitch("Auto size 2", function(enabled)
-    if enabled then
-        _G.AutoSize2 = true
-        while _G.AutoSize2 do
-            local args = {
-                "changeSize",
-                2
-            }
-            game:GetService("ReplicatedStorage")
-                :WaitForChild("rEvents")
-                :WaitForChild("changeSpeedSizeRemote")
-                :InvokeServer(unpack(args))
+task.spawn(function()
+	while true do
+		RebirthData.Label.Text = "Rebirths: " .. Utils.formatWithCommas(RebirthData.Rebirths.Value)
+		RebirthData.TargetLabel.Text = "Target Rebirths: " .. Utils.formatWithCommas(RebirthData.TargetRebirths)
+		task.wait(0.01)
+	end
+end)
 
-            task.wait(1)
-        end
-    else
-        _G.AutoSize2 = false
-    end
+local SizeData = {Active = false}
+
+farmTab:AddSwitch("Auto Size 1", function(bool) SizeData.Active = bool end):Set(false)
+
+task.spawn(function()
+	while true do
+		if SizeData.Active and PlayerData.Character and PlayerData.Humanoid then
+			Remotes.ChangeSpeedSize:InvokeServer("changeSize", 1)
+		end
+		task.wait(0.01)
+	end
+end)
+
+local KingData = {TargetPosition = CFrame.new(-8665.4, 17.21, -5792.9), TeleportActive = false}
+
+farmingTab:AddSwitch("Auto King", function(enabled)
+	KingData.TeleportActive = enabled
+end)
+
+task.spawn(function()
+	while true do
+		if KingData.TeleportActive then
+			if not PlayerData.Character or not PlayerData.Character:FindFirstChildOfClass("Humanoid") then
+				PlayerData.Player.CharacterAdded:Wait()
+				PlayerData.Character = PlayerData.Player.Character
+				task.wait(2)
+			end
+
+			if not PlayerData.Humanoid or PlayerData.Humanoid.Health <= 0 then
+				repeat
+					task.wait(0.5)
+					PlayerData.Character = PlayerData.Player.Character
+					PlayerData.Humanoid = PlayerData.Character and PlayerData.Character:FindFirstChildOfClass("Humanoid")
+				until PlayerData.Character and PlayerData.Humanoid and PlayerData.Humanoid.Health > 0
+				task.wait(1)
+			end
+
+			if PlayerData.Character and PlayerData.Character:FindFirstChild("HumanoidRootPart") then
+				if (PlayerData.Character.HumanoidRootPart.Position - KingData.TargetPosition.Position).magnitude > 5 then
+					pcall(function() 
+						PlayerData.Character.HumanoidRootPart.CFrame = KingData.TargetPosition 
+					end)
+				end
+			end
+		end
+		task.wait(0.05)
+	end
 end)

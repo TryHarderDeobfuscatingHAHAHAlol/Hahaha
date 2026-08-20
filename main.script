@@ -1450,93 +1450,103 @@ task.spawn(function()
     end
 end)
 
-local farmTab = window:AddTab("Rebirths")
-farmTab:AddLabel("Rebirth Farming")
+local rebirths = window:AddTab("Rebirths")
 
-local RebirthData = {
-	Label = farmTab:AddLabel("Rebirths: 0"),
-	TargetLabel = farmTab:AddLabel("Target: None"),
-	Rebirths = PlayerData.Player.leaderstats:WaitForChild("Rebirths"),
-	TargetRebirths = 0,
-	IsAutoRebirthing = false
-}
+rebirths:AddLabel("Careful in Rebirthing")
 
-RebirthData.Label.TextSize = 14
-RebirthData.TargetLabel.TextSize = 14
-
-farmTab:AddTextBox("Set Rebirth Target (Required):", function(text)
-	if tonumber(text) and tonumber(text) >= 0 then RebirthData.TargetRebirths = tonumber(text) end
+rebirths:AddTextBox("Rebirth Target", function(text)
+    local newValue = tonumber(text)
+    if newValue and newValue > 0 then
+        targetRebirthValue = newValue
+        updateStats() -- Call the stats update function
+        
+        game:GetService("StarterGui"):SetCore("SendNotification", {
+            Title = "Objetivo Actualizado",
+            Text = "Nuevo objetivo: " .. tostring(targetRebirthValue) .. " renacimientos",
+            Duration = 0
+        })
+    else
+        game:GetService("StarterGui"):SetCore("SendNotification", {
+            Title = "Size",
+            Text = "Put a size larger than 0",
+            Duration = 0
+        })
+    end
 end)
 
-RebirthData.Switch = farmTab:AddSwitch("Auto Rebirth", function(enabled)
-	if enabled and RebirthData.TargetRebirths > 0 and RebirthData.Rebirths.Value < RebirthData.TargetRebirths then
-		RebirthData.IsAutoRebirthing = true
-		task.spawn(function()
-			while RebirthData.IsAutoRebirthing and RebirthData.Rebirths.Value < RebirthData.TargetRebirths do
-				Services.ReplicatedStorage.rEvents.rebirthRemote:InvokeServer("rebirthRequest")
-				task.wait(0.05)
-			end
-			RebirthData.IsAutoRebirthing = false
-			RebirthData.Switch:Set(false)
-		end)
-	else
-		RebirthData.IsAutoRebirthing = false
-	end
-end)
+local infiniteSwitch
 
-task.spawn(function()
-	while true do
-		RebirthData.Label.Text = "Rebirths: " .. Utils.formatWithCommas(RebirthData.Rebirths.Value)
-		RebirthData.TargetLabel.Text = "Target Rebirths: " .. Utils.formatWithCommas(RebirthData.TargetRebirths)
-		task.wait(0.01)
-	end
-end)
+local targetSwitch = rebirths:AddSwitch("Auto Rebirth Target", function(bool)
+    _G.targetRebirthActive = bool
+    
+    if bool then
+        if _G.infiniteRebirthActive and infiniteSwitch then
+            infiniteSwitch:Set(false)
+            _G.infiniteRebirthActive = false
+        end
+        
+        spawn(function()
+            while _G.targetRebirthActive and wait(0.1) do
+                local currentRebirths = game.Players.LocalPlayer.leaderstats.Rebirths.Value
+                
+                if currentRebirths >= targetRebirthValue then
+                    targetSwitch:Set(false)
+                    _G.targetRebirthActive = false
+                    
+                    game:GetService("StarterGui"):SetCore("SendNotification", {
+                        Title = "ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€¦Ã‚Â¡ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¡Objetivo Alcanzado!",
+                        Text = "Has alcanzado " .. tostring(targetRebirthValue) .. " renacimientos",
+                        Duration = 5
+                    })
+                    
+                    break
+                end
+                
+                game:GetService("ReplicatedStorage").rEvents.rebirthRemote:InvokeServer("rebirthRequest")
+            end
+        end)
+    end
+end, "automatic rebirth until reaching the goal")
 
-local SizeData = {Active = false}
+infiniteSwitch = rebirths:AddSwitch("Auto Rebirth (Infinitely)", function(bool)
+    _G.infiniteRebirthActive = bool
+    
+    if bool then
+        if _G.targetRebirthActive and targetSwitch then
+            targetSwitch:Set(false)
+            _G.targetRebirthActive = false
+        end
+        
+        spawn(function()
+            while _G.infiniteRebirthActive and wait(0.1) do
+                game:GetService("ReplicatedStorage").rEvents.rebirthRemote:InvokeServer("rebirthRequest")
+            end
+        end)
+    end
+end, "rebirth infinitely")
 
-farmTab:AddSwitch("Auto Size 1", function(bool) SizeData.Active = bool end):Set(false)
+local sizeSwitch = rebirths:AddSwitch("Auto Size 1", function(bool)
+    _G.autoSizeActive = bool
+    
+    if bool then
+        spawn(function()
+            while _G.autoSizeActive and wait() do
+                game:GetService("ReplicatedStorage").rEvents.changeSpeedSizeRemote:InvokeServer("changeSize", 1)
+            end
+        end)
+    end
+end, "Size 1")
 
-task.spawn(function()
-	while true do
-		if SizeData.Active and PlayerData.Character and PlayerData.Humanoid then
-			Remotes.ChangeSpeedSize:InvokeServer("changeSize", 1)
-		end
-		task.wait(0.01)
-	end
-end)
-
-local KingData = {TargetPosition = CFrame.new(-8665.4, 17.21, -5792.9), TeleportActive = false}
-
-farmingTab:AddSwitch("Auto King", function(enabled)
-	KingData.TeleportActive = enabled
-end)
-
-task.spawn(function()
-	while true do
-		if KingData.TeleportActive then
-			if not PlayerData.Character or not PlayerData.Character:FindFirstChildOfClass("Humanoid") then
-				PlayerData.Player.CharacterAdded:Wait()
-				PlayerData.Character = PlayerData.Player.Character
-				task.wait(2)
-			end
-
-			if not PlayerData.Humanoid or PlayerData.Humanoid.Health <= 0 then
-				repeat
-					task.wait(0.5)
-					PlayerData.Character = PlayerData.Player.Character
-					PlayerData.Humanoid = PlayerData.Character and PlayerData.Character:FindFirstChildOfClass("Humanoid")
-				until PlayerData.Character and PlayerData.Humanoid and PlayerData.Humanoid.Health > 0
-				task.wait(1)
-			end
-
-			if PlayerData.Character and PlayerData.Character:FindFirstChild("HumanoidRootPart") then
-				if (PlayerData.Character.HumanoidRootPart.Position - KingData.TargetPosition.Position).magnitude > 5 then
-					pcall(function() 
-						PlayerData.Character.HumanoidRootPart.CFrame = KingData.TargetPosition 
-					end)
-				end
-			end
-		end
-		task.wait(0.05)
-	end
-end)
+local teleportSwitch = rebirths:AddSwitch("Auto Teleport to Muscle King", function(bool)
+    _G.teleportActive = bool
+    
+    if bool then
+        spawn(function()
+            while _G.teleportActive and wait() do
+                if game.Players.LocalPlayer.Character then
+                    game.Players.LocalPlayer.Character:MoveTo(Vector3.new(-8646, 17, -5738))
+                end
+            end
+        end)
+    end
+end, "Tp to Mk")

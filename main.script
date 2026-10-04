@@ -1,6 +1,6 @@
 local library = loadstring(game:HttpGet("https://raw.githubusercontent.com/TryHarderDeobfuscatingHAHAHAlol/Secret-UI/refs/heads/main/FNOP.Library", true))()
 
-local window = library:AddWindow("FNOP | PRIVATE - By Kenzou ", {
+local window = library:AddWindow("M14EBR || PRIVATE || BY KENZOUU ", {
     main_color = Color3.fromRGB(120, 0, 0),
     min_size = Vector2.new(650, 870),
     can_minimize = false,
@@ -9,8 +9,8 @@ local window = library:AddWindow("FNOP | PRIVATE - By Kenzou ", {
 local credits = window:AddTab("Credits")
 
 credits:Show()
-credits:AddLabel("FNOP SECRET SCRIPT MADE BY PRIME KENZOUU WITH ❤️")
-credits:AddLabel("THANK YOU FOR USING MY SECRET SCRIPT")
+credits:AddLabel("M14EBR UNFINISHED SCRIPT MADE BY PRIME KENZOUU WITH ❤️")
+credits:AddLabel("THANK YOU FOR USING MY UNFINISHED SCRIPT")
 credits:AddLabel("MAKE YOUR OWN RISK!")
 credits:AddLabel("POGI SI KENZOU, WAG KA AANGAL DI KO IPAPAGAMIT TO SAYO")
 
@@ -254,6 +254,33 @@ local ancientJungleRockSwitch = farmTab:AddSwitch("Jungle Rock", function(bool)
                 if game:GetService("Players").LocalPlayer.Durability.Value >= 10000000 then
                     for i, v in pairs(game:GetService("Workspace").machinesFolder:GetDescendants()) do
                         if v.Name == "neededDurability" and v.Value == 10000000 and 
+                           game.Players.LocalPlayer.Character:FindFirstChild("LeftHand") and
+                           game.Players.LocalPlayer.Character:FindFirstChild("RightHand") then
+ 
+                            firetouchinterest(v.Parent.Rock, game:GetService("Players").LocalPlayer.Character.RightHand, 0)
+                            firetouchinterest(v.Parent.Rock, game:GetService("Players").LocalPlayer.Character.RightHand, 1)
+                            firetouchinterest(v.Parent.Rock, game:GetService("Players").LocalPlayer.Character.LeftHand, 0)
+                            firetouchinterest(v.Parent.Rock, game:GetService("Players").LocalPlayer.Character.LeftHand, 1)
+                            gettool()
+                        end
+                    end
+                end
+            end
+        end)
+    end
+end)
+
+local industrialJungleRockSwitch = farmTab:AddSwitch("Industrial Rock", function(bool)
+    selectrock = "Industrial Jungle Rock"
+    getgenv().autoFarm = bool
+ 
+    if bool then
+        spawn(function()
+            while getgenv().autoFarm do
+                task.wait()
+                if game:GetService("Players").LocalPlayer.Durability.Value >= 25000000 then
+                    for i, v in pairs(game:GetService("Workspace").machinesFolder:GetDescendants()) do
+                        if v.Name == "neededDurability" and v.Value == 25000000 and 
                            game.Players.LocalPlayer.Character:FindFirstChild("LeftHand") and
                            game.Players.LocalPlayer.Character:FindFirstChild("RightHand") then
  

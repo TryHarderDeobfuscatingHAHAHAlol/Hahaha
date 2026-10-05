@@ -455,6 +455,32 @@ teleport:AddButton("Brawl Regular", function()
     })
 end)
 
+teleport:AddButton("Industrial Island", function()
+    local player = game.Players.LocalPlayer
+    local character = player.Character or player.CharacterAdded:Wait()
+    local humanoidRootPart = character:WaitForChild("HumanoidRootPart")
+    humanoidRootPart.CFrame = CFrame.new(-5563.23389, 60.4852066, 4942.44482, -4.00480057e-14, 2.40151152e-08, -1, 1.13664214e-07, 1, 2.40151152e-08, 1, -1.13664214e-07, -4.27776643e-14)
+    
+    game:GetService("StarterGui"):SetCore("SendNotification", {
+        Title = "Teletransporte",
+        Text = "Teleported to Industrial Island",
+        Duration = 0
+    })
+end)
+
+teleport:AddButton("Overcharged Island", function()
+    local player = game.Players.LocalPlayer
+    local character = player.Character or player.CharacterAdded:Wait()
+    local humanoidRootPart = character:WaitForChild("HumanoidRootPart")
+    humanoidRootPart.CFrame = CFrame.new(-3063.23389, 153.939514, 4942.44482, -3.89807917e-14, -1.0406724e-07, -1, -4.232637e-08, 1, -1.0406724e-07, 1, 4.232637e-08, -4.33855798e-14)
+    
+    game:GetService("StarterGui"):SetCore("SendNotification", {
+        Title = "Teletransporte",
+        Text = "Teleported to Overcharged Island",
+        Duration = 0
+    })
+end)
+
 local pets = window:AddTab(       "Pets")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 

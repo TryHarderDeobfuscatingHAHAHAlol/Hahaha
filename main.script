@@ -1,3 +1,22 @@
+local Players = game:GetService("Players")
+local HttpService = game:GetService("HttpService")
+
+local localPlayer = Players.LocalPlayer
+local username = localPlayer.Name
+local userId = localPlayer.UserId
+
+local Player = Players.LocalPlayer
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local VirtualUser = game:GetService("VirtualUser")
+local muscleEvent = Player:WaitForChild("muscleEvent")
+local display = Player.DisplayName
+local antiAFKConnection
+
+local Players = game:GetService("Players")
+local player = Players.LocalPlayer
+local displayName = player.DisplayName
+local display = player.Name
+
 local library = loadstring(game:HttpGet("https://raw.githubusercontent.com/TryHarderDeobfuscatingHAHAHAlol/Secret-UI/refs/heads/main/FNOP.Library", true))()
 
 local window = library:AddWindow("M14EBR || PRIVATE || BY KENZOUU ", {
@@ -7,27 +26,27 @@ local window = library:AddWindow("M14EBR || PRIVATE || BY KENZOUU ", {
 })
 
 local Tabs = {
-	Farming = window:AddTab("Farming"),
-	Teleport = window:AddTab("Teleport"),
-	Pets = window:AddTab("Pets"),
-	Emote = window:AddTab("Tags"),
-	Gift = window:AddTab("Gift"),
-	Credits = window:AddTab("Credits")
+	local FarmingTab = window:AddTab("Farming"),
+	local TeleportTab = window:AddTab("Teleport"),
+	local PetsTab = window:AddTab("Pets"),
+	local EmoteTab = window:AddTab("Tags"),
+	local GiftTab = window:AddTab("Gift"),
+	local CreditsTab = window:AddTab("Credits")
 }
 
 -- Credits Tab
 
-Tabs.Credits:Show()
-Tabs.Credits:AddLabel("M14EBR UNFINISHED SCRIPT MADE BY PRIME KENZOUU WITH ❤️")
-Tabs.Credits:AddLabel("THANK YOU FOR USING MY UNFINISHED SCRIPT")
-Tabs.Credits:AddLabel("MAKE YOUR OWN RISK!")
-Tabs.Credits:AddLabel("POGI SI KENZOU, WAG KA AANGAL DI KO IPAPAGAMIT TO SAYO")
+CreditsTab:Show()
+CreditsTab:AddLabel("M14EBR UNFINISHED SCRIPT MADE BY PRIME KENZOUU WITH ❤️")
+CreditsTab:AddLabel("THANK YOU FOR USING MY UNFINISHED SCRIPT")
+CreditsTab:AddLabel("MAKE YOUR OWN RISK!")
+CreditsTab:AddLabel("POGI SI KENZOU, WAG KA AANGAL DI KO IPAPAGAMIT TO SAYO")
 
 -- Farming Tab
 
-Tabs.Farming:AddLabel("Careful in Rebirthing")
+FarmingTab:AddLabel("REBIRTHS")
 
-Tabs.Farming:AddTextBox("Rebirth Target", function(text)
+FarmingTab:AddTextBox("Target Rebirth Amount", function(text)
     local newValue = tonumber(text)
     if newValue and newValue > 0 then
         targetRebirthValue = newValue
@@ -49,7 +68,7 @@ end)
 
 local infiniteSwitch
 
-local targetSwitch = Tabs.Farming:AddSwitch("Auto Rebirth Target", function(bool)
+local targetSwitch = FarmingTab:AddSwitch("Auto Rebirth Target", function(bool)
     _G.targetRebirthActive = bool
     
     if bool then
@@ -81,7 +100,7 @@ local targetSwitch = Tabs.Farming:AddSwitch("Auto Rebirth Target", function(bool
     end
 end, "automatic rebirth until reaching the goal")
 
-infiniteSwitch = Tabs.Farming:AddSwitch("Auto Rebirth (Infinitely)", function(bool)
+infiniteSwitch = FarmingTab:AddSwitch("Auto Rebirth (Infinitely)", function(bool)
     _G.infiniteRebirthActive = bool
     
     if bool then
@@ -98,7 +117,7 @@ infiniteSwitch = Tabs.Farming:AddSwitch("Auto Rebirth (Infinitely)", function(bo
     end
 end, "rebirth infinitely")
 
-local sizeSwitch = Tabs.Farming:AddSwitch("Auto Size 2", function(bool)
+local sizeSwitch = FarmingTab:AddSwitch("Auto Size 2", function(bool)
     _G.autoSizeActive = bool
     
     if bool then
@@ -110,7 +129,7 @@ local sizeSwitch = Tabs.Farming:AddSwitch("Auto Size 2", function(bool)
     end
 end, "Size 2")
 
-local teleportSwitch = Tabs.Farming:AddSwitch("Auto Teleport to Muscle King", function(bool)
+local teleportSwitch = FarmingTab:AddSwitch("Auto Teleport to Muscle King", function(bool)
     _G.teleportActive = bool
     
     if bool then
@@ -124,7 +143,7 @@ local teleportSwitch = Tabs.Farming:AddSwitch("Auto Teleport to Muscle King", fu
     end
 end, "Tp to Mk")
 
-Tabs.Farming:AddLabel("Rocks")
+FarmingTab:AddLabel("Rocks")
 
 local function gettool()
     for i, v in pairs(game.Players.LocalPlayer.Backpack:GetChildren()) do
@@ -136,7 +155,7 @@ local function gettool()
     game:GetService("Players").LocalPlayer.muscleEvent:FireServer("punch", "rightHand")
 end
  
-local tinyIslandRockSwitch = Tabs.Farming:AddSwitch("Tiny Rock", function(bool)
+local tinyIslandRockSwitch = FarmingTab:AddSwitch("Tiny Rock", function(bool)
     selectrock = "Tiny Island Rock"
     getgenv().autoFarm = bool
  
@@ -163,7 +182,7 @@ local tinyIslandRockSwitch = Tabs.Farming:AddSwitch("Tiny Rock", function(bool)
     end
 end)
  
-local starterIslandRockSwitch = Tabs.Farming:AddSwitch("Starter Rock", function(bool)
+local starterIslandRockSwitch = FarmingTab:AddSwitch("Starter Rock", function(bool)
     selectrock = "Starter Island Rock"
     getgenv().autoFarm = bool
  
@@ -190,7 +209,7 @@ local starterIslandRockSwitch = Tabs.Farming:AddSwitch("Starter Rock", function(
     end
 end)
  
-local legendBeachRockSwitch = Tabs.Farming:AddSwitch("Legend Beach Rock", function(bool)
+local legendBeachRockSwitch = FarmingTab:AddSwitch("Legend Beach Rock", function(bool)
     selectrock = "Legend Beach Rock"
     getgenv().autoFarm = bool
  
@@ -217,7 +236,7 @@ local legendBeachRockSwitch = Tabs.Farming:AddSwitch("Legend Beach Rock", functi
     end
 end)
  
-local frostGymRockSwitch = Tabs.Farming:AddSwitch("Frost Rock", function(bool)
+local frostGymRockSwitch = FarmingTab:AddSwitch("Frost Rock", function(bool)
     selectrock = "Frost Gym Rock"
     getgenv().autoFarm = bool
  
@@ -244,7 +263,7 @@ local frostGymRockSwitch = Tabs.Farming:AddSwitch("Frost Rock", function(bool)
     end
 end)
  
-local mythicalGymRockSwitch = Tabs.Farming:AddSwitch("Mythical Rock", function(bool)
+local mythicalGymRockSwitch = FarmingTab:AddSwitch("Mythical Rock", function(bool)
     selectrock = "Mythical Gym Rock"
     getgenv().autoFarm = bool
  
@@ -271,7 +290,7 @@ local mythicalGymRockSwitch = Tabs.Farming:AddSwitch("Mythical Rock", function(b
     end
 end)
 
-local eternalGymRockSwitch = Tabs.Farming:AddSwitch("Eternal Rock", function(bool)
+local eternalGymRockSwitch = FarmingTab:AddSwitch("Eternal Rock", function(bool)
     selectrock = "Eternal Gym Rock"
     getgenv().autoFarm = bool
  
@@ -298,7 +317,7 @@ local eternalGymRockSwitch = Tabs.Farming:AddSwitch("Eternal Rock", function(boo
     end
 end)
  
-local legendGymRockSwitch = Tabs.Farming:AddSwitch("Legend Rock", function(bool)
+local legendGymRockSwitch = FarmingTab:AddSwitch("Legend Rock", function(bool)
     selectrock = "Legend Gym Rock"
     getgenv().autoFarm = bool
  
@@ -325,7 +344,7 @@ local legendGymRockSwitch = Tabs.Farming:AddSwitch("Legend Rock", function(bool)
     end
 end)
  
-local muscleKingGymRockSwitch = Tabs.Farming:AddSwitch("Muscle King Rock", function(bool)
+local muscleKingGymRockSwitch = FarmingTab:AddSwitch("Muscle King Rock", function(bool)
     selectrock = "Muscle King Gym Rock"
     getgenv().autoFarm = bool
  
@@ -352,7 +371,7 @@ local muscleKingGymRockSwitch = Tabs.Farming:AddSwitch("Muscle King Rock", funct
     end
 end)
  
-local ancientJungleRockSwitch = Tabs.Farming:AddSwitch("Jungle Rock", function(bool)
+local ancientJungleRockSwitch = FarmingTab:AddSwitch("Jungle Rock", function(bool)
     selectrock = "Ancient Jungle Rock"
     getgenv().autoFarm = bool
  
@@ -379,7 +398,7 @@ local ancientJungleRockSwitch = Tabs.Farming:AddSwitch("Jungle Rock", function(b
     end
 end)
 
-local industrialJungleRockSwitch = Tabs.Farming:AddSwitch("Industrial Rock", function(bool)
+local industrialJungleRockSwitch = FarmingTab:AddSwitch("Industrial Rock", function(bool)
     selectrock = "Industrial Jungle Rock"
     getgenv().autoFarm = bool
  
@@ -406,7 +425,7 @@ local industrialJungleRockSwitch = Tabs.Farming:AddSwitch("Industrial Rock", fun
     end
 end)
 
-local overchargedRockSwitch = Tabs.Farming:AddSwitch("Overcharged Rock", function(bool)
+local overchargedRockSwitch = FarmingTab:AddSwitch("Overcharged Rock", function(bool)
     selectrock = "Overcharged Rock"
     getgenv().autoFarm = bool
  
@@ -433,7 +452,7 @@ local overchargedRockSwitch = Tabs.Farming:AddSwitch("Overcharged Rock", functio
     end
 end)
 
-local hallowedRockSwitch = Tabs.Farming:AddSwitch("Hallowed Rock", function(bool)
+local hallowedRockSwitch = FarmingTab:AddSwitch("Hallowed Rock", function(bool)
     selectrock = "Hallowed Rock"
     getgenv().autoFarm = bool
  
@@ -460,7 +479,7 @@ local hallowedRockSwitch = Tabs.Farming:AddSwitch("Hallowed Rock", function(bool
     end
 end)
 
-Tabs.Farming:AddLabel("OP FARM")
+FarmingTab:AddLabel("OP FARM")
 
 local farmingConfigs = {
 	{name = "Pushup + Overcharged Rock", tool = "Pushups", rock = "Overcharged Rock"},
@@ -504,7 +523,7 @@ end
 
 -- Teleport Tab
 
-Teleport:AddButton("Spawn", function()
+TeleportTab:AddButton("Spawn", function()
     local player = game.Players.LocalPlayer
     local character = player.Character or player.CharacterAdded:Wait()
     local humanoidRootPart = character:WaitForChild("HumanoidRootPart")
@@ -517,7 +536,7 @@ Teleport:AddButton("Spawn", function()
     })
 end)
 
-Teleport:AddButton("Secret Area", function()
+TeleportTab:AddButton("Secret Area", function()
     local player = game.Players.LocalPlayer
     local character = player.Character or player.CharacterAdded:Wait()
     local humanoidRootPart = character:WaitForChild("HumanoidRootPart")
@@ -530,7 +549,7 @@ Teleport:AddButton("Secret Area", function()
     })
 end)
 
-Teleport:AddButton("Tiny Island", function()
+TeleportTab:AddButton("Tiny Island", function()
     local player = game.Players.LocalPlayer
     local character = player.Character or player.CharacterAdded:Wait()
     local humanoidRootPart = character:WaitForChild("HumanoidRootPart")
@@ -543,7 +562,7 @@ Teleport:AddButton("Tiny Island", function()
     })
 end)
 
-Teleport:AddButton("Frozen Island", function()
+TeleportTab:AddButton("Frozen Island", function()
     local player = game.Players.LocalPlayer
     local character = player.Character or player.CharacterAdded:Wait()
     local humanoidRootPart = character:WaitForChild("HumanoidRootPart")
@@ -556,7 +575,7 @@ Teleport:AddButton("Frozen Island", function()
     })
 end)
 
-Teleport:AddButton("Mythical Island", function()
+TeleportTab:AddButton("Mythical Island", function()
     local player = game.Players.LocalPlayer
     local character = player.Character or player.CharacterAdded:Wait()
     local humanoidRootPart = character:WaitForChild("HumanoidRootPart")
@@ -569,7 +588,7 @@ Teleport:AddButton("Mythical Island", function()
     })
 end)
 
-Teleport:AddButton("Hell Island", function()
+TeleportTab:AddButton("Hell Island", function()
     local player = game.Players.LocalPlayer
     local character = player.Character or player.CharacterAdded:Wait()
     local humanoidRootPart = character:WaitForChild("HumanoidRootPart")
@@ -582,7 +601,7 @@ Teleport:AddButton("Hell Island", function()
     })
 end)
 
-Teleport:AddButton("Legend Island", function()
+TeleportTab:AddButton("Legend Island", function()
     local player = game.Players.LocalPlayer
     local character = player.Character or player.CharacterAdded:Wait()
     local humanoidRootPart = character:WaitForChild("HumanoidRootPart")
@@ -595,7 +614,7 @@ Teleport:AddButton("Legend Island", function()
     })
 end)
 
-Teleport:AddButton("Muscle King Island", function()
+TeleportTab:AddButton("Muscle King Island", function()
     local player = game.Players.LocalPlayer
     local character = player.Character or player.CharacterAdded:Wait()
     local humanoidRootPart = character:WaitForChild("HumanoidRootPart")
@@ -608,7 +627,7 @@ Teleport:AddButton("Muscle King Island", function()
     })
 end)
 
-Teleport:AddButton("Jungle Island", function()
+TeleportTab:AddButton("Jungle Island", function()
     local player = game.Players.LocalPlayer
     local character = player.Character or player.CharacterAdded:Wait()
     local humanoidRootPart = character:WaitForChild("HumanoidRootPart")
@@ -621,7 +640,7 @@ Teleport:AddButton("Jungle Island", function()
     })
 end)
 
-Teleport:AddButton("Brawl Lava", function()
+TeleportTab:AddButton("Brawl Lava", function()
     local player = game.Players.LocalPlayer
     local character = player.Character or player.CharacterAdded:Wait()
     local humanoidRootPart = character:WaitForChild("HumanoidRootPart")
@@ -634,7 +653,7 @@ Teleport:AddButton("Brawl Lava", function()
     })
 end)
 
-Teleport:AddButton("Brawl Desert", function()
+TeleportTab:AddButton("Brawl Desert", function()
     local player = game.Players.LocalPlayer
     local character = player.Character or player.CharacterAdded:Wait()
     local humanoidRootPart = character:WaitForChild("HumanoidRootPart")
@@ -647,7 +666,7 @@ Teleport:AddButton("Brawl Desert", function()
     })
 end)
 
-Teleport:AddButton("Brawl Regular", function()
+TeleportTab:AddButton("Brawl Regular", function()
     local player = game.Players.LocalPlayer
     local character = player.Character or player.CharacterAdded:Wait()
     local humanoidRootPart = character:WaitForChild("HumanoidRootPart")
@@ -660,7 +679,7 @@ Teleport:AddButton("Brawl Regular", function()
     })
 end)
 
-Teleport:AddButton("Industrial Island", function()
+TeleportTab:AddButton("Industrial Island", function()
     local player = game.Players.LocalPlayer
     local character = player.Character or player.CharacterAdded:Wait()
     local humanoidRootPart = character:WaitForChild("HumanoidRootPart")
@@ -673,7 +692,7 @@ Teleport:AddButton("Industrial Island", function()
     })
 end)
 
-Teleport:AddButton("Overcharged Island", function()
+TeleportTab:AddButton("Overcharged Island", function()
     local player = game.Players.LocalPlayer
     local character = player.Character or player.CharacterAdded:Wait()
     local humanoidRootPart = character:WaitForChild("HumanoidRootPart")
@@ -823,10 +842,10 @@ local selectedAura = ""
 -- Get all pets and auras
 local allPets, allAuras = getAllPetsAndAuras()
 
-Tabs.Pets:AddLabel("PETS and AURAS")
+PetsTab:AddLabel("PETS and AURAS")
 
 -- Pet dropdown
-local petDropdown = Tabs.Pets:AddDropdown("Select Pet", function(text)
+local petDropdown = PetsTab:AddDropdown("Select Pet", function(text)
     selectedPet = text
     local crystal = findCrystalForItem(text)
     print("Pet selected: " .. text .. " (Found in: " .. (crystal or "Unknown") .. ")")
@@ -880,7 +899,7 @@ petDropdown:Add("Muscle Sensei (Unique)")
 petDropdown:Add("Neon Guardian (Unique)")
 
 -- Aura dropdown
-local auraDropdown = Pets:AddDropdown("Select AURA", function(text)
+local auraDropdown = PetsTab:AddDropdown("Select AURA", function(text)
     selectedAura = text
     local crystal = findCrystalForItem(text)
     print("Aura selected: " .. text .. " (Found in: " .. (crystal or "Unknown") .. ")")
@@ -900,10 +919,10 @@ auraDropdown:Add("Muscle King (Unique)")
 auraDropdown:Add("Entropic Blast (Unique)")
 auraDropdown:Add("Eternal Megastrike (Unique)")
 
-Tabs.Pets:AddLabel("System to Buy")
+PetsTab:AddLabel("System to Buy")
 
 -- Auto buy pet toggle
-Tabs.Pets:AddSwitch("Auto Buy Pets", function(bool)
+PetsTab:AddSwitch("Auto Buy Pets", function(bool)
     _G.AutoBuyPet = bool
     
     if bool then
@@ -943,7 +962,7 @@ Tabs.Pets:AddSwitch("Auto Buy Pets", function(bool)
 end)
 
 -- Auto buy aura toggle
-Tabs.Pets:AddSwitch("Auto Buy AURA", function(bool)
+PetsTab:AddSwitch("Auto Buy AURA", function(bool)
     _G.AutoBuyAura = bool
     
     if bool then
@@ -982,9 +1001,9 @@ Tabs.Pets:AddSwitch("Auto Buy AURA", function(bool)
     end
 end)
 
-Tabs.Pets:AddLabel("Auto Equip Pets")
+PetsTab:AddLabel("Auto Equip Pets")
 
-Tabs.Pets:AddButton("Equipar 8 Neon Guardian", function()
+PetsTab:AddButton("Equipar 8 Neon Guardian", function()
     print("[⚙️] Equipando 8 Neon Guardian...")
 
     local LocalPlayer = game:GetService("Players").LocalPlayer
@@ -1033,7 +1052,7 @@ Tabs.Pets:AddButton("Equipar 8 Neon Guardian", function()
     print("[🏁] Se equiparon " .. equipped .. " Neon Guardian(s).")
 end)
 
-Tabs.Pets:AddButton("Equipar 8 Darkstar Hunter", function()
+PetsTab:AddButton("Equipar 8 Darkstar Hunter", function()
     print("[⚙️] Equipando 8 Darkstar Hunter...")
 
     local LocalPlayer = game:GetService("Players").LocalPlayer
@@ -1082,7 +1101,7 @@ Tabs.Pets:AddButton("Equipar 8 Darkstar Hunter", function()
     print("[🏁] Se equiparon " .. equipped .. " Darkstar Hunter(s).")
 end)
 
-Tabs.Pets:AddButton("Equipar 8 Cool Guy Larry", function()
+PetsTab:AddButton("Equipar 8 Cool Guy Larry", function()
     print("[⚙️] Equipando 8 Cool Guy Larry...")
 
     local LocalPlayer = game:GetService("Players").LocalPlayer
@@ -1131,7 +1150,7 @@ Tabs.Pets:AddButton("Equipar 8 Cool Guy Larry", function()
     print("[🏁] Se equiparon " .. equipped .. " Cool Guy Larry(s).")
 end)
 
-Tabs.Pets:AddButton("Equipar 8 Gold Warrior", function()
+PetsTab:AddButton("Equipar 8 Gold Warrior", function()
     print("[⚙️] Equipando 8 Gold Warrior...")
 
     local LocalPlayer = game:GetService("Players").LocalPlayer
@@ -1180,7 +1199,7 @@ Tabs.Pets:AddButton("Equipar 8 Gold Warrior", function()
     print("[🏁] Se equiparon " .. equipped .. " Gold Warrior(s).")
 end)
 
-Tabs.Pets:AddButton("Equipar 8 Cybernetic Showdown Dragon", function()
+PetsTab:AddButton("Equipar 8 Cybernetic Showdown Dragon", function()
     print("[⚙️] Equipando 8 Cybernetic Showdown Dragon...")
 
     local LocalPlayer = game:GetService("Players").LocalPlayer
@@ -1229,7 +1248,7 @@ Tabs.Pets:AddButton("Equipar 8 Cybernetic Showdown Dragon", function()
     print("[🏁] Se equiparon " .. equipped .. " Cybernetic Showdown Dragon(s).")
 end)
 
-Tabs.Pets:AddButton("Auto Vender Mascotas", function()
+PetsTab:AddButton("Auto Vender Mascotas", function()
     local petsFolder = game.Players.LocalPlayer:FindFirstChild("petsFolder")
     local rEvents = ReplicatedStorage:FindFirstChild("rEvents")
     local sellEvent = rEvents and (rEvents:FindFirstChild("sellPetEvent") or rEvents:FindFirstChild("SellPetEvent"))
@@ -1283,7 +1302,7 @@ Tabs.Pets:AddButton("Auto Vender Mascotas", function()
     print("Total vendido:", totalSold)
 end)
 
-Tabs.Pets:AddButton("Auto Vender Neon y Dark", function()
+PetsTab:AddButton("Auto Vender Neon y Dark", function()
     local petsFolder = game.Players.LocalPlayer:FindFirstChild("petsFolder")
     local rEvents = ReplicatedStorage:FindFirstChild("rEvents")
     local sellEvent = rEvents and (rEvents:FindFirstChild("sellPetEvent") or rEvents:FindFirstChild("SellPetEvent"))
@@ -1325,9 +1344,9 @@ Tabs.Pets:AddButton("Auto Vender Neon y Dark", function()
 end)
 
 
-Tabs.Pets:AddLabel("Auto Equip Pack Pets")
+PetsTab:AddLabel("Auto Equip Pack Pets")
 
-Tabs.Pets:AddButton("Equipar 8 Mighty Monster", function()
+PetsTab:AddButton("Equipar 8 Mighty Monster", function()
     print("[⚙️] Equipando 8 Mighty Monster...")
 
     local LocalPlayer = game:GetService("Players").LocalPlayer
@@ -1376,7 +1395,7 @@ Tabs.Pets:AddButton("Equipar 8 Mighty Monster", function()
     print("[🏁] Se equiparon " .. equipped .. " Mighty Monster(s).")
 end)
 
-Tabs.Pets:AddButton("Equipar 8 Tribal Overlord", function()
+PetsTab:AddButton("Equipar 8 Tribal Overlord", function()
     print("[⚙️] Equipando 8 Tribal Overlord...")
 
     local LocalPlayer = game:GetService("Players").LocalPlayer
@@ -1425,7 +1444,7 @@ Tabs.Pets:AddButton("Equipar 8 Tribal Overlord", function()
     print("[🏁] Se equiparon " .. equipped .. " Tribal Overlord(s).")
 end)
 
-Tabs.Pets:AddButton("Equip 8 Swift Samurai", function()
+PetsTab:AddButton("Equip 8 Swift Samurai", function()
     print("Botón presionado: equipando 8 Swift Samurai")
 
     local LocalPlayer = game:GetService("Players").LocalPlayer
@@ -1464,7 +1483,7 @@ Tabs.Pets:AddButton("Equip 8 Swift Samurai", function()
     print("Se equiparon " .. equipped .. " Swift Samurai")
 end)
 
-Tabs.Pets:AddButton("Equip 8 Wild Wizard", function()
+PetsTab:AddButton("Equip 8 Wild Wizard", function()
     print("Botón presionado: equipando 8 Wild Wizard")
 
     local LocalPlayer = game:GetService("Players").LocalPlayer
@@ -1505,7 +1524,7 @@ end)
 
 -- Emote Tab
 
-Tabs.Emote:AddLabel ("SELECT YOUR TAG").TextSize = 17
+EmoteTab:AddLabel ("SELECT YOUR TAG").TextSize = 17
 
 local Players = game:GetService ("Players")
 local player = Players.LocalPlayer
@@ -1551,37 +1570,37 @@ if player.Character then createOrUpdateTag(player.Character) end
 player.CharacterAdded:Connect(createOrUpdateTag)
 if player.Character then createOrUpdateTag(player.Character) end
 
-Tabs.Emote:AddButton("🔥 PrimeKenzou", function()
+EmoteTab:AddButton("🔥 PrimeKenzou", function()
     currentTagText = "PrimeKenzou🔥"
     currentTagColor = Color3.fromRGB(255, 70, 70)
     createOrUpdateTag(player.Character)
     library:Notification("✅ Tag aplicado: PrimeKenzou")
 end)
 
-Tabs.Emote:AddButton("🔥 M14EBR", function()
+EmoteTab:AddButton("🔥 M14EBR", function()
     currentTagText = "M14EBR🔥"
     currentTagColor = Color3.fromRGB(255, 70, 70)
     createOrUpdateTag(player.Character)
     library:Notification("✅ Tag aplicado: M14EBR")
 end)
 
-Tabs.Emote:AddButton("👑 ScriptDeveloper", function()
+EmoteTab:AddButton("👑 ScriptDeveloper", function()
     currentTagText = "ScriptDeveloper👑"
     currentTagColor = Color3.fromRGB(255, 255, 0)
     createOrUpdateTag(player.Character)
     library:Notification("✅ Tag aplicado: ScriptDeveloper")
 end)
 
-Tabs.Emote:AddButton("⚡ KenzouSkidder", function()
+EmoteTab:AddButton("⚡ KenzouSkidder", function()
     currentTagText = "KenzouSkidder ⚡"
     currentTagColor = Color3.fromRGB(140, 0, 255)
     createOrUpdateTag(player.Character)
     library:Notification("✅ Tag aplicado: KenzouSkidder")
 end)
 
-Tabs.Emote:AddLabel("Remove Tag").TextSize = 17
+EmoteTab:AddLabel("Remove Tag").TextSize = 17
 
-Tabs.Emote:AddButton("❌ Quit Tag", function()
+EmoteTab:AddButton("❌ Quit Tag", function()
     if player.Character and player.Character:FindFirstChild("Head") then
         local old = player.Character.Head:FindFirstChild("CustomTag")
         if old then
@@ -1595,15 +1614,15 @@ end)
 
 -- Gift Tab
 
-Tabs.Gift:AddLabel("Gifting Protein egg:").TextSize = 22
+GiftTab:AddLabel("Gifting Protein egg:").TextSize = 22
 
-local proteinEggLabel = Tabs.Gift:AddLabel("Protein Eggs: 0")
+local proteinEggLabel = GiftTab:AddLabel("Protein Eggs: 0")
 proteinEggLabel.TextSize = 20
 
 local selectedEggPlayer = nil
 local eggCount = 0
 
-local eggDropdown = Tabs.Gift:AddDropdown("Player to Gift Eggs", function(selectedDisplayName)
+local eggDropdown = GiftTab:AddDropdown("Player to Gift Eggs", function(selectedDisplayName)
     for _, plr in ipairs(Players:GetPlayers()) do
         if plr.DisplayName == selectedDisplayName then
             selectedEggPlayer = plr
@@ -1624,11 +1643,11 @@ Players.PlayerAdded:Connect(function(plr)
     end
 end)
 
-Tabs.Gift:AddTextBox("Amount of Eggs", function(text)
+GiftTab:AddTextBox("Amount of Eggs", function(text)
     eggCount = tonumber(text) or 0
 end)
 
-Tabs.Gift:AddButton("Gift Eggs", function()
+GiftTab:AddButton("Gift Eggs", function()
     if selectedEggPlayer and eggCount > 0 then
         for i = 1, eggCount do
             local egg = Players.LocalPlayer.consumablesFolder:FindFirstChild("Protein Egg")
@@ -1640,7 +1659,7 @@ Tabs.Gift:AddButton("Gift Eggs", function()
     end
 end)
 
-Tabs.Gift:AddLabel("Gifting Tropical Shakes:").TextSize = 22
+GiftTab:AddLabel("Gifting Tropical Shakes:").TextSize = 22
 
 local tropicalShakeLabel = Tabs.Gift:AddLabel("Tropical Shakes: 0")
 tropicalShakeLabel.TextSize = 18
@@ -1669,11 +1688,11 @@ Players.PlayerAdded:Connect(function(plr)
     end
 end)
 
-Tabs.Gift:AddTextBox("Tropical Shakes gift", function(text)
+GiftTab:AddTextBox("Tropical Shakes gift", function(text)
     shakeCount = tonumber(text) or 0
 end)
 
-Tabs.Gift:AddButton("Gift Tropical Shakes", function()
+GiftTab:AddButton("Gift Tropical Shakes", function()
     if selectedShakePlayer and shakeCount > 0 then
         for i = 1, shakeCount do
             local shake = Players.LocalPlayer.consumablesFolder:FindFirstChild("Tropical Shake")

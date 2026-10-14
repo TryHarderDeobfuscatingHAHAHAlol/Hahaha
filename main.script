@@ -14,9 +14,108 @@ credits:AddLabel("THANK YOU FOR USING MY UNFINISHED SCRIPT")
 credits:AddLabel("MAKE YOUR OWN RISK!")
 credits:AddLabel("POGI SI KENZOU, WAG KA AANGAL DI KO IPAPAGAMIT TO SAYO")
 
-local farmTab = window:AddTab("Rock")
-farmTab:AddLabel("Glitching Rock")
- 
+local FarmingTab = window:AddTab("Farming")
+FarmingTab:AddLabel("Careful in Rebirthing")
+
+FarmingTab:AddTextBox("Rebirth Target", function(text)
+    local newValue = tonumber(text)
+    if newValue and newValue > 0 then
+        targetRebirthValue = newValue
+        updateStats() -- Call the stats update function
+        
+        game:GetService("StarterGui"):SetCore("SendNotification", {
+            Title = "Objetivo Actualizado",
+            Text = "Nuevo objetivo: " .. tostring(targetRebirthValue) .. " renacimientos",
+            Duration = 0
+        })
+    else
+        game:GetService("StarterGui"):SetCore("SendNotification", {
+            Title = "Size",
+            Text = "Put a size larger than 0",
+            Duration = 0
+        })
+    end
+end)
+
+local infiniteSwitch
+
+local targetSwitch = FarmingTab:AddSwitch("Auto Rebirth Target", function(bool)
+    _G.targetRebirthActive = bool
+    
+    if bool then
+        if _G.infiniteRebirthActive and infiniteSwitch then
+            infiniteSwitch:Set(false)
+            _G.infiniteRebirthActive = false
+        end
+        
+        spawn(function()
+            while _G.targetRebirthActive and wait(0.1) do
+                local currentRebirths = game.Players.LocalPlayer.leaderstats.Rebirths.Value
+                
+                if currentRebirths >= targetRebirthValue then
+                    targetSwitch:Set(false)
+                    _G.targetRebirthActive = false
+                    
+                    game:GetService("StarterGui"):SetCore("SendNotification", {
+                        Title = "ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€¦Ã‚Â¡ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¡Objetivo Alcanzado!",
+                        Text = "Has alcanzado " .. tostring(targetRebirthValue) .. " renacimientos",
+                        Duration = 5
+                    })
+                    
+                    break
+                end
+                
+                game:GetService("ReplicatedStorage").rEvents.rebirthRemote:InvokeServer("rebirthRequest")
+            end
+        end)
+    end
+end, "automatic rebirth until reaching the goal")
+
+infiniteSwitch = FarmingTab:AddSwitch("Auto Rebirth (Infinitely)", function(bool)
+    _G.infiniteRebirthActive = bool
+    
+    if bool then
+        if _G.targetRebirthActive and targetSwitch then
+            targetSwitch:Set(false)
+            _G.targetRebirthActive = false
+        end
+        
+        spawn(function()
+            while _G.infiniteRebirthActive and wait(0.1) do
+                game:GetService("ReplicatedStorage").rEvents.rebirthRemote:InvokeServer("rebirthRequest")
+            end
+        end)
+    end
+end, "rebirth infinitely")
+
+local sizeSwitch = FarmingTab:AddSwitch("Auto Size 1", function(bool)
+    _G.autoSizeActive = bool
+    
+    if bool then
+        spawn(function()
+            while _G.autoSizeActive and wait() do
+                game:GetService("ReplicatedStorage").rEvents.changeSpeedSizeRemote:InvokeServer("changeSize", 1)
+            end
+        end)
+    end
+end, "Size 1")
+
+local teleportSwitch = FarmingTab:AddSwitch("Auto Teleport to Muscle King", function(bool)
+    _G.teleportActive = bool
+    
+    if bool then
+        spawn(function()
+            while _G.teleportActive and wait() do
+                if game.Players.LocalPlayer.Character then
+                    game.Players.LocalPlayer.Character:MoveTo(Vector3.new(-8646, 17, -5738))
+                end
+            end
+        end)
+    end
+end, "Tp to Mk")
+
+FarmingTab:AddLabel("Rocks")
+
 local function gettool()
     for i, v in pairs(game.Players.LocalPlayer.Backpack:GetChildren()) do
         if v.Name == "Punch" and game.Players.LocalPlayer.Character:FindFirstChild("Humanoid") then
@@ -27,7 +126,7 @@ local function gettool()
     game:GetService("Players").LocalPlayer.muscleEvent:FireServer("punch", "rightHand")
 end
  
-local tinyIslandRockSwitch = farmTab:AddSwitch("Tiny Rock", function(bool)
+local tinyIslandRockSwitch = FarmingTab:AddSwitch("Tiny Rock", function(bool)
     selectrock = "Tiny Island Rock"
     getgenv().autoFarm = bool
  
@@ -54,7 +153,7 @@ local tinyIslandRockSwitch = farmTab:AddSwitch("Tiny Rock", function(bool)
     end
 end)
  
-local starterIslandRockSwitch = farmTab:AddSwitch("Starter Rock", function(bool)
+local starterIslandRockSwitch = FarmingTab:AddSwitch("Starter Rock", function(bool)
     selectrock = "Starter Island Rock"
     getgenv().autoFarm = bool
  
@@ -81,7 +180,7 @@ local starterIslandRockSwitch = farmTab:AddSwitch("Starter Rock", function(bool)
     end
 end)
  
-local legendBeachRockSwitch = farmTab:AddSwitch("Legend Beach Rock", function(bool)
+local legendBeachRockSwitch = FarmingTab:AddSwitch("Legend Beach Rock", function(bool)
     selectrock = "Legend Beach Rock"
     getgenv().autoFarm = bool
  
@@ -108,7 +207,7 @@ local legendBeachRockSwitch = farmTab:AddSwitch("Legend Beach Rock", function(bo
     end
 end)
  
-local frostGymRockSwitch = farmTab:AddSwitch("Frost Rock", function(bool)
+local frostGymRockSwitch = FarmingTab:AddSwitch("Frost Rock", function(bool)
     selectrock = "Frost Gym Rock"
     getgenv().autoFarm = bool
  
@@ -135,7 +234,7 @@ local frostGymRockSwitch = farmTab:AddSwitch("Frost Rock", function(bool)
     end
 end)
  
-local mythicalGymRockSwitch = farmTab:AddSwitch("Mythical Rock", function(bool)
+local mythicalGymRockSwitch = FarmingTab:AddSwitch("Mythical Rock", function(bool)
     selectrock = "Mythical Gym Rock"
     getgenv().autoFarm = bool
  
@@ -162,7 +261,7 @@ local mythicalGymRockSwitch = farmTab:AddSwitch("Mythical Rock", function(bool)
     end
 end)
 
-local eternalGymRockSwitch = farmTab:AddSwitch("Eternal Rock", function(bool)
+local eternalGymRockSwitch = FarmingTab:AddSwitch("Eternal Rock", function(bool)
     selectrock = "Eternal Gym Rock"
     getgenv().autoFarm = bool
  
@@ -189,7 +288,7 @@ local eternalGymRockSwitch = farmTab:AddSwitch("Eternal Rock", function(bool)
     end
 end)
  
-local legendGymRockSwitch = farmTab:AddSwitch("Legend Rock", function(bool)
+local legendGymRockSwitch = FarmingTab:AddSwitch("Legend Rock", function(bool)
     selectrock = "Legend Gym Rock"
     getgenv().autoFarm = bool
  
@@ -216,7 +315,7 @@ local legendGymRockSwitch = farmTab:AddSwitch("Legend Rock", function(bool)
     end
 end)
  
-local muscleKingGymRockSwitch = farmTab:AddSwitch("Muscle King Rock", function(bool)
+local muscleKingGymRockSwitch = FarmingTab:AddSwitch("Muscle King Rock", function(bool)
     selectrock = "Muscle King Gym Rock"
     getgenv().autoFarm = bool
  
@@ -243,7 +342,7 @@ local muscleKingGymRockSwitch = farmTab:AddSwitch("Muscle King Rock", function(b
     end
 end)
  
-local ancientJungleRockSwitch = farmTab:AddSwitch("Jungle Rock", function(bool)
+local ancientJungleRockSwitch = FarmingTab:AddSwitch("Jungle Rock", function(bool)
     selectrock = "Ancient Jungle Rock"
     getgenv().autoFarm = bool
  
@@ -270,7 +369,7 @@ local ancientJungleRockSwitch = farmTab:AddSwitch("Jungle Rock", function(bool)
     end
 end)
 
-local industrialJungleRockSwitch = farmTab:AddSwitch("Industrial Rock", function(bool)
+local industrialJungleRockSwitch = FarmingTab:AddSwitch("Industrial Rock", function(bool)
     selectrock = "Industrial Jungle Rock"
     getgenv().autoFarm = bool
  
@@ -281,6 +380,60 @@ local industrialJungleRockSwitch = farmTab:AddSwitch("Industrial Rock", function
                 if game:GetService("Players").LocalPlayer.Durability.Value >= 25000000 then
                     for i, v in pairs(game:GetService("Workspace").machinesFolder:GetDescendants()) do
                         if v.Name == "neededDurability" and v.Value == 25000000 and 
+                           game.Players.LocalPlayer.Character:FindFirstChild("LeftHand") and
+                           game.Players.LocalPlayer.Character:FindFirstChild("RightHand") then
+ 
+                            firetouchinterest(v.Parent.Rock, game:GetService("Players").LocalPlayer.Character.RightHand, 0)
+                            firetouchinterest(v.Parent.Rock, game:GetService("Players").LocalPlayer.Character.RightHand, 1)
+                            firetouchinterest(v.Parent.Rock, game:GetService("Players").LocalPlayer.Character.LeftHand, 0)
+                            firetouchinterest(v.Parent.Rock, game:GetService("Players").LocalPlayer.Character.LeftHand, 1)
+                            gettool()
+                        end
+                    end
+                end
+            end
+        end)
+    end
+end)
+
+local overchargedRockSwitch = FarmingTab:AddSwitch("Overcharged Rock", function(bool)
+    selectrock = "Overcharged Rock"
+    getgenv().autoFarm = bool
+ 
+    if bool then
+        spawn(function()
+            while getgenv().autoFarm do
+                task.wait()
+                if game:GetService("Players").LocalPlayer.Durability.Value >= 0 then
+                    for i, v in pairs(game:GetService("Workspace").machinesFolder:GetDescendants()) do
+                        if v.Name == "neededDurability" and v.Value == 0 and 
+                           game.Players.LocalPlayer.Character:FindFirstChild("LeftHand") and
+                           game.Players.LocalPlayer.Character:FindFirstChild("RightHand") then
+ 
+                            firetouchinterest(v.Parent.Rock, game:GetService("Players").LocalPlayer.Character.RightHand, 0)
+                            firetouchinterest(v.Parent.Rock, game:GetService("Players").LocalPlayer.Character.RightHand, 1)
+                            firetouchinterest(v.Parent.Rock, game:GetService("Players").LocalPlayer.Character.LeftHand, 0)
+                            firetouchinterest(v.Parent.Rock, game:GetService("Players").LocalPlayer.Character.LeftHand, 1)
+                            gettool()
+                        end
+                    end
+                end
+            end
+        end)
+    end
+end)
+
+local hallowedRockSwitch = FarmingTab:AddSwitch("Hallowed Rock", function(bool)
+    selectrock = "Hallowed Rock"
+    getgenv().autoFarm = bool
+ 
+    if bool then
+        spawn(function()
+            while getgenv().autoFarm do
+                task.wait()
+                if game:GetService("Players").LocalPlayer.Durability.Value >= 0 then
+                    for i, v in pairs(game:GetService("Workspace").machinesFolder:GetDescendants()) do
+                        if v.Name == "neededDurability" and v.Value == 0 and 
                            game.Players.LocalPlayer.Character:FindFirstChild("LeftHand") and
                            game.Players.LocalPlayer.Character:FindFirstChild("RightHand") then
  
@@ -1502,104 +1655,3 @@ task.spawn(function()
         task.wait(0.25)
     end
 end)
-
-local rebirths = window:AddTab("Rebirths")
-
-rebirths:AddLabel("Careful in Rebirthing")
-
-rebirths:AddTextBox("Rebirth Target", function(text)
-    local newValue = tonumber(text)
-    if newValue and newValue > 0 then
-        targetRebirthValue = newValue
-        updateStats() -- Call the stats update function
-        
-        game:GetService("StarterGui"):SetCore("SendNotification", {
-            Title = "Objetivo Actualizado",
-            Text = "Nuevo objetivo: " .. tostring(targetRebirthValue) .. " renacimientos",
-            Duration = 0
-        })
-    else
-        game:GetService("StarterGui"):SetCore("SendNotification", {
-            Title = "Size",
-            Text = "Put a size larger than 0",
-            Duration = 0
-        })
-    end
-end)
-
-local infiniteSwitch
-
-local targetSwitch = rebirths:AddSwitch("Auto Rebirth Target", function(bool)
-    _G.targetRebirthActive = bool
-    
-    if bool then
-        if _G.infiniteRebirthActive and infiniteSwitch then
-            infiniteSwitch:Set(false)
-            _G.infiniteRebirthActive = false
-        end
-        
-        spawn(function()
-            while _G.targetRebirthActive and wait(0.1) do
-                local currentRebirths = game.Players.LocalPlayer.leaderstats.Rebirths.Value
-                
-                if currentRebirths >= targetRebirthValue then
-                    targetSwitch:Set(false)
-                    _G.targetRebirthActive = false
-                    
-                    game:GetService("StarterGui"):SetCore("SendNotification", {
-                        Title = "ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€¦Ã‚Â¡ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¡Objetivo Alcanzado!",
-                        Text = "Has alcanzado " .. tostring(targetRebirthValue) .. " renacimientos",
-                        Duration = 5
-                    })
-                    
-                    break
-                end
-                
-                game:GetService("ReplicatedStorage").rEvents.rebirthRemote:InvokeServer("rebirthRequest")
-            end
-        end)
-    end
-end, "automatic rebirth until reaching the goal")
-
-infiniteSwitch = rebirths:AddSwitch("Auto Rebirth (Infinitely)", function(bool)
-    _G.infiniteRebirthActive = bool
-    
-    if bool then
-        if _G.targetRebirthActive and targetSwitch then
-            targetSwitch:Set(false)
-            _G.targetRebirthActive = false
-        end
-        
-        spawn(function()
-            while _G.infiniteRebirthActive and wait(0.1) do
-                game:GetService("ReplicatedStorage").rEvents.rebirthRemote:InvokeServer("rebirthRequest")
-            end
-        end)
-    end
-end, "rebirth infinitely")
-
-local sizeSwitch = rebirths:AddSwitch("Auto Size 1", function(bool)
-    _G.autoSizeActive = bool
-    
-    if bool then
-        spawn(function()
-            while _G.autoSizeActive and wait() do
-                game:GetService("ReplicatedStorage").rEvents.changeSpeedSizeRemote:InvokeServer("changeSize", 1)
-            end
-        end)
-    end
-end, "Size 1")
-
-local teleportSwitch = rebirths:AddSwitch("Auto Teleport to Muscle King", function(bool)
-    _G.teleportActive = bool
-    
-    if bool then
-        spawn(function()
-            while _G.teleportActive and wait() do
-                if game.Players.LocalPlayer.Character then
-                    game.Players.LocalPlayer.Character:MoveTo(Vector3.new(-8646, 17, -5738))
-                end
-            end
-        end)
-    end
-end, "Tp to Mk")

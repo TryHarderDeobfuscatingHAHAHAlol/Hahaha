@@ -450,43 +450,75 @@ local hallowedRockSwitch = FarmingTab:AddSwitch("Hallowed Rock", function(bool)
     end
 end)
 
-FarmingTab:AddLabel("OP Farming:")
+FarmingTab:AddLabel("OP Farming")
 
 local farmingConfigs = {
-	{name = "Pushup + Hallowed Rock", tool = "Pushups", rock = "Hallowed Rock"},
-	{name = "Situps + Hallowed Rock", tool = "Situps", rock = "Hallowed Rock"},
-	{name = "Handstands + Hallowed Rock", tool = "Handstands", rock = "Hallowed Rock"}
+	{name = "Pushup + Overcharged Rock", tool = "Pushups", rock = "Overcharged Rock"},
+	{name = "Situps + OverCharged Rock", tool = "Situps", rock = "OverCharged Rock"},
+	{name = "Handstands + Overcharged Rock", tool = "Handstands", rock = "OverCharged Rock"}
 }
 
 for _, config in ipairs(farmingConfigs) do
-	local isActive = false
-	Tabs.Farming:AddSwitch(config.name, function(state)
-		isActive = state
-		if isActive then
-			if PlayerData.Player.Backpack:FindFirstChild(config.tool) and not PlayerData.Player.Character:FindFirstChild(config.tool) then
-				PlayerData.Player.Character.Humanoid:EquipTool(PlayerData.Player.Backpack[config.tool])
-			end
+	local isRunning = false
+
+	FarmingTab:AddSwitch(config.name, function(state)
+		isRunning = state
+		local player = PlayerData.Player
+		local backpack = player.Backpack
+		
+		if isRunning then
 			task.spawn(function()
-				while isActive do
-					PlayerData.Player.muscleEvent:FireServer("rep")
-					if Services.Workspace.machinesFolder:FindFirstChild(config.rock) and PlayerData.Player.Character:FindFirstChild("LeftHand") then
-						firetouchinterest(Services.Workspace.machinesFolder[config.rock].Rock, PlayerData.Player.Character.LeftHand, 0)
-						firetouchinterest(Services.Workspace.machinesFolder[config.rock].Rock, PlayerData.Player.Character.LeftHand, 1)
+				while isRunning do
+					local character = player.Character
+					local humanoid = character and character:FindFirstChildOfClass("Humanoid")
+					local leftHand = character and character:FindFirstChild("LeftHand")
+					
+					if character and humanoid then
+						-- 1. Siguraduhing naka-equip ang main training tool (Pushups/Situps/Handstands)
+						local currentTool = character:FindFirstChild(config.tool)
+						if not currentTool then
+							local toolInBackpack = backpack:FindFirstChild(config.tool)
+							if toolInBackpack then
+								humanoid:EquipTool(toolInBackpack)
+							end
+						end
+						
+						-- 2. Trigger ang rep event
+						player.muscleEvent:FireServer("rep")
+						
+						-- 3. Touch the rock if available
+						local rockModel = Services.Workspace.machinesFolder:FindFirstChild(config.rock)
+						if rockModel and rockModel:FindFirstChild("Rock") and leftHand then
+							firetouchinterest(rockModel.Rock, leftHand, 0)
+							firetouchinterest(rockModel.Rock, leftHand, 1)
+						end
+						
+						-- 4. Handle punch event safely (kung kailangan para sa dagdag na bilis/bisa)
+						local punchTool = backpack:FindFirstChild("Punch") or character:FindFirstChild("Punch")
+						if punchTool then
+							if not character:FindFirstChild("Punch") and humanoid then
+								humanoid:EquipTool(punchTool)
+							end
+							player.muscleEvent:FireServer("punch", "rightHand")
+							player.muscleEvent:FireServer("punch", "leftHand")
+						end
 					end
-					if PlayerData.Player.Backpack:FindFirstChild("Punch") then
-						PlayerData.Humanoid:EquipTool(PlayerData.Player.Backpack.Punch)
-						PlayerData.Player.muscleEvent:FireServer("punch", "rightHand")
-						PlayerData.Player.muscleEvent:FireServer("punch", "leftHand")
-					end
-					Services.RunService.RenderStepped:Wait()
-					if PlayerData.Player.Backpack:FindFirstChild(config.tool) then
-						PlayerData.Player.Character.Humanoid:EquipTool(PlayerData.Player.Backpack[config.tool])
-					end
+					
+					task.wait(0.15) -- Pwede mong baguhin ang bilis dito (mas mababa = mas mabilis, pero baka mag-lag)
 				end
 			end)
 		else
-			if PlayerData.Player.Character:FindFirstChild(config.tool) then
-				PlayerData.Player.Character[config.tool].Parent = PlayerData.Player.Backpack
+			-- Kapag pinatay ang switch, ibalik sa backpack ang tool
+			local character = player.Character
+			if character then
+				local equippedTool = character:FindFirstChild(config.tool)
+				if equippedTool then
+					equippedTool.Parent = backpack
+				end
+				local punchTool = character:FindFirstChild("Punch")
+				if punchTool then
+					punchTool.Parent = backpack
+				end
 			end
 		end
 	end)

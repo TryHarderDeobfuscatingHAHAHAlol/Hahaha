@@ -451,48 +451,6 @@ local hallowedRockSwitch = FarmingTab:AddSwitch("Hallowed Rock", function(bool)
     end
 end)
 
-FarmingTab:AddLabel("OP FARM")
-
-local farmingConfigs = {
-	{name = "Pushup + Overcharged Rock", tool = "Pushups", rock = "Overcharged Rock"},
-	{name = "Situps + Overcharged Rock", tool = "Situps", rock = "Overcharged Rock"},
-	{name = "Handstands + Overcharged Rock", tool = "Handstands", rock = "Overcharged Rock"}
-}
-
-for _, config in ipairs(farmingConfigs) do
-	local isActive = false
-	Tabs.Farming:AddSwitch(config.name, function(state)
-		isActive = state
-		if isActive then
-			if PlayerData.Player.Backpack:FindFirstChild(config.tool) and not PlayerData.Player.Character:FindFirstChild(config.tool) then
-				PlayerData.Player.Character.Humanoid:EquipTool(PlayerData.Player.Backpack[config.tool])
-			end
-			task.spawn(function()
-				while isActive do
-					PlayerData.Player.muscleEvent:FireServer("rep")
-					if Services.Workspace.machinesFolder:FindFirstChild(config.rock) and PlayerData.Player.Character:FindFirstChild("LeftHand") then
-						firetouchinterest(Services.Workspace.machinesFolder[config.rock].Rock, PlayerData.Player.Character.LeftHand, 0)
-						firetouchinterest(Services.Workspace.machinesFolder[config.rock].Rock, PlayerData.Player.Character.LeftHand, 1)
-					end
-					if PlayerData.Player.Backpack:FindFirstChild("Punch") then
-						PlayerData.Humanoid:EquipTool(PlayerData.Player.Backpack.Punch)
-						PlayerData.Player.muscleEvent:FireServer("punch", "rightHand")
-						PlayerData.Player.muscleEvent:FireServer("punch", "leftHand")
-					end
-					Services.RunService.RenderStepped:Wait()
-					if PlayerData.Player.Backpack:FindFirstChild(config.tool) then
-						PlayerData.Player.Character.Humanoid:EquipTool(PlayerData.Player.Backpack[config.tool])
-					end
-				end
-			end)
-		else
-			if PlayerData.Player.Character:FindFirstChild(config.tool) then
-				PlayerData.Player.Character[config.tool].Parent = PlayerData.Player.Backpack
-			end
-		end
-	end)
-end
-
 local TeleportTab = window:AddTab("Teleport")
 
 TeleportTab:AddButton("Spawn", function()

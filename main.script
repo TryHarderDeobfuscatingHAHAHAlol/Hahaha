@@ -6,16 +6,7 @@ local window = library:AddWindow("M14EBR || PRIVATE || BY KENZOUU ", {
     can_minimize = false,
 })
 
-local Tabs = {
-	FarmingTab = window:AddTab("Farming"),
-	TeleportTab = window:AddTab("Teleport"),
-	PetsTab = window:AddTab("Pets"),
-	EmoteTab = window:AddTab("Tags"),
-	GiftTab = window:AddTab("Gift"),
-	CreditsTab = window:AddTab("Credits")
-}
-
--- Credits Tab
+local CreditsTab = window:AddTab("Credits")
 
 CreditsTab:Show()
 CreditsTab:AddLabel("M14EBR UNFINISHED SCRIPT MADE BY PRIME KENZOUU WITH ❤️")
@@ -23,7 +14,7 @@ CreditsTab:AddLabel("THANK YOU FOR USING MY UNFINISHED SCRIPT")
 CreditsTab:AddLabel("MAKE YOUR OWN RISK!")
 CreditsTab:AddLabel("POGI SI KENZOU, WAG KA AANGAL DI KO IPAPAGAMIT TO SAYO")
 
--- Farming Tab
+local FarmingTab = window:AddTab("Farming")
 
 FarmingTab:AddLabel("REBIRTHS")
 
@@ -502,7 +493,7 @@ for _, config in ipairs(farmingConfigs) do
 	end)
 end
 
--- Teleport Tab
+local TeleportTab = window:AddTab("Teleport")
 
 TeleportTab:AddButton("Spawn", function()
     local player = game.Players.LocalPlayer
@@ -686,7 +677,7 @@ TeleportTab:AddButton("Overcharged Island", function()
     })
 end)
 
--- Pets Tab
+local PetsTab = window:AddTab(" Pets")
 
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
@@ -1503,7 +1494,7 @@ PetsTab:AddButton("Equip 8 Wild Wizard", function()
     print("Se equiparon " .. equipped .. " Swift Samurai")
 end)
 
--- Emote Tab
+local EmoteTab = window:AddTab("Tags")
 
 EmoteTab:AddLabel ("SELECT YOUR TAG").TextSize = 17
 
@@ -1593,7 +1584,7 @@ EmoteTab:AddButton("❌ Quit Tag", function()
     end
 end)
 
--- Gift Tab
+local GiftTab = window:AddTab("Gift")
 
 GiftTab:AddLabel("Gifting Protein egg:").TextSize = 22
 

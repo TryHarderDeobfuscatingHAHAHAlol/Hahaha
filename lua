@@ -7,12 +7,12 @@ local window = library:AddWindow("M14EBR || PRIVATE || BY KENZOUU ", {
 })
 
 local Tabs = {
-	local FarmingTab = window:AddTab("Farming"),
-	local TeleportTab = window:AddTab("Teleport"),
-	local PetsTab = window:AddTab("Pets"),
-	local EmoteTab = window:AddTab("Tags"),
-	local GiftTab = window:AddTab("Gift"),
-	local CreditsTab = window:AddTab("Credits")
+	FarmingTab = window:AddTab("Farming"),
+	TeleportTab = window:AddTab("Teleport"),
+	PetsTab = window:AddTab("Pets"),
+	EmoteTab = window:AddTab("Tags"),
+	GiftTab = window:AddTab("Gift"),
+	CreditsTab = window:AddTab("Credits")
 }
 
 -- Credits Tab
@@ -464,7 +464,7 @@ FarmingTab:AddLabel("OP FARM")
 
 local farmingConfigs = {
 	{name = "Pushup + Overcharged Rock", tool = "Pushups", rock = "Overcharged Rock"},
-	{name = "Situps + OverCharged Rock", tool = "Situps", rock = "Overcharged Rock"},
+	{name = "Situps + Overcharged Rock", tool = "Situps", rock = "Overcharged Rock"},
 	{name = "Handstands + Overcharged Rock", tool = "Handstands", rock = "Overcharged Rock"}
 }
 
